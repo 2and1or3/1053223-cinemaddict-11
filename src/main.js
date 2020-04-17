@@ -1,18 +1,21 @@
-import createFilmsListExtraTemplate from './components/films-extra.js';
-import createProfileTemplate from './components/profile.js';
-import createMenuTemplate from './components/menu.js';
-import createSortTemplate from './components/sort.js';
-import createCardTemplate from './components/card.js';
-import createLoadButtonTemplate from './components/load-button.js';
-import createDetailsPopuptemplate from './components/details-popup.js';
-import createFooterStatisticTemplate from './components/footer-statistic.js';
+import {createFilmsListExtraTemplate} from './components/films-extra.js';
+import {createProfileTemplate} from './components/profile.js';
+import {createMenuTemplate} from './components/menu.js';
+import {createSortTemplate} from './components/sort.js';
+import {createCardTemplate} from './components/card.js';
+import {createLoadButtonTemplate} from './components/load-button.js';
+import {createDetailsPopuptemplate} from './components/details-popup.js';
+import {createFooterStatisticTemplate} from './components/footer-statistic.js';
 
+import {films as cards} from './mock/film.js';
 
 const CARD_COUNT = 5;
 const TOP_CARD_COUNT = 2;
 const MOST_CARD_COUNT = 2;
 const EXTRA_TOP = `Top rated`;
 const EXTRA_MOST = `Most commented`;
+
+console.log(cards);
 
 const createContentContainer = function () {
   return `<section class="films"></section>`;
@@ -47,7 +50,7 @@ const films = content.querySelector(`.films-list`);
 const filmsContainer = films.querySelector(`.films-list__container`);
 
 for (let i = 0; i < CARD_COUNT; i++) {
-  render(filmsContainer, createCardTemplate());
+  render(filmsContainer, createCardTemplate(cards[i]));
 }
 
 render(films, createLoadButtonTemplate());

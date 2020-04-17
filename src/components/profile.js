@@ -7,4 +7,4 @@ const createProfileTemplate = function () {
   );
 };
 
-export default createProfileTemplate;
+export {createProfileTemplate};

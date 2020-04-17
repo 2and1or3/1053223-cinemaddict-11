@@ -12,4 +12,4 @@ const createMenuTemplate = function () {
   );
 };
 
-export default createMenuTemplate;
+export {createMenuTemplate};

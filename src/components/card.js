@@ -1,3 +1,5 @@
+//  need poster, title, rating, date -> year, duration, genres, description -> short, comments.length
+
 const createCardTemplate = function () {
   return (
     `<article class="film-card">
@@ -20,4 +22,4 @@ const createCardTemplate = function () {
   );
 };
 
-export default createCardTemplate;
+export {createCardTemplate};

@@ -121,4 +121,4 @@ const createDetailsPopuptemplate = function () {
   );
 };
 
-export default createDetailsPopuptemplate;
+export {createDetailsPopuptemplate};

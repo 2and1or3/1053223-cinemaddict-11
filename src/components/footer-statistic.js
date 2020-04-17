@@ -6,4 +6,4 @@ const createFooterStatisticTemplate = function () {
   );
 };
 
-export default createFooterStatisticTemplate;
+export {createFooterStatisticTemplate};
