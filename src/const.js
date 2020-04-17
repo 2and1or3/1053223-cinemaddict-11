@@ -18,4 +18,11 @@ const DATE_YEAR = {
   max: 2020,
 };
 
-export {MONTH_NAMES, DATE_YEAR};
+const FILTER_TYPES = {
+  ALL: `all`,
+  WATCHLIST: `watchlist`,
+  HISTORY: `history`,
+  FAVORITE: `favorite`,
+};
+
+export {MONTH_NAMES, DATE_YEAR, FILTER_TYPES};

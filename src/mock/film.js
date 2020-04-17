@@ -44,7 +44,7 @@ const generateFilm = () => {
     rating: (Math.random() * MAX_RATING).toFixed(1),
     team: {
       director: DIRECTORS[Math.round(Math.random() * (DIRECTORS.length - 1))],
-      scenarist: SCENARISTS[Math.round(Math.random() * (SCENARISTS.length - 1))],
+      scenarists: getRandomArray(SCENARISTS),
       cast: getRandomArray(CASTS),
     },
     date: dateCardFormat(randomDate),
@@ -54,6 +54,9 @@ const generateFilm = () => {
     description: getRandomArray(DESCRIPTIONS).join(` `),
     ageLimit: getRandomInteger(0, MAX_AGE_LIMIT),
     comments: generateComments(getRandomInteger(0, COMMENTS_LIMIT)),
+    isWatchList: Math.random() > 0.5,
+    isFavorite: Math.random() > 0.5,
+    isWatched: Math.random() > 0.5
   };
 };
 
