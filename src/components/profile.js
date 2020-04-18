@@ -1,53 +1,41 @@
 import {FILTER_TYPES} from '../const.js';
 import {updateFilters} from '../mock/filter.js';
 
-const USER_TYPES = [
-  {
-    title: ``,
-    range: {
-      min: -1,
-      max: 0,
-    }
+const USER_TYPES = {
+  [``]: {
+    min: -1,
+    max: 0,
   },
-  {
-    title: `Novice`,
-    range: {
-      min: 1,
-      max: 10,
-    }
+  'Novice': {
+    min: 1,
+    max: 10,
   },
-  {
-    title: `Fan`,
-    range: {
-      min: 11,
-      max: 20,
-    }
+  'Fan': {
+    min: 11,
+    max: 20,
   },
-  {
-    title: `Movie Buff`,
-    range: {
-      min: 21,
-      max: Infinity,
-    }
+  'Movie Buff': {
+    min: 21,
+    max: Infinity,
   },
-];
+};
 
-const CURRENT_TYPE = `HISTORY`;
+const DEFAULT_TYPE = FILTER_TYPES.HISTORY;
 
 const counter = updateFilters();
 
-const count = counter[FILTER_TYPES[CURRENT_TYPE]];
+const count = counter[FILTER_TYPES[DEFAULT_TYPE]];
 
 const getUserStatus = (quantity) => {
-  let trueTitle = ``;
+  let status = ``;
 
-  USER_TYPES.forEach((obj) => {
-    if (obj.range.min <= quantity && quantity <= obj.range.max) {
-      trueTitle = obj.title;
+  for (const title of Object.keys(USER_TYPES)) {
+    if (USER_TYPES[title].min <= quantity && quantity <= USER_TYPES[title].max) {
+      status = title;
     }
-  });
+  }
 
-  return trueTitle;
+  return status;
 };
 
 const createProfileTemplate = function () {

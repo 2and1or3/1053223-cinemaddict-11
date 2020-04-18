@@ -1,9 +1,9 @@
 const createFilterTemplate = (filter, isChecked) => {
   const {title, count} = filter;
-  const activeClass = isChecked ? ` main-navigation__item--active` : ``;
+  const activeClass = isChecked ? `main-navigation__item--active` : ``;
 
-  const template = typeof count === `string` ? `<a href="#${title}" class="main-navigation__item${activeClass}">${count}</a>` :
-    `<a href="#${title}" class="main-navigation__item${activeClass}">${title[0].toUpperCase() + title.slice(1)} <span class="main-navigation__item-count">${count}</span></a>`;
+  const template = !count ? `<a href="#${title}" class="main-navigation__item ${activeClass}">All movies</a>` :
+    `<a href="#${title}" class="main-navigation__item ${activeClass}">${title[0].toUpperCase() + title.slice(1)} <span class="main-navigation__item-count">${count}</span></a>`;
 
   return template;
 };
