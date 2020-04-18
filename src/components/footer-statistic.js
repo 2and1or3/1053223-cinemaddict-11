@@ -1,9 +1,9 @@
-const createFooterStatisticTemplate = function () {
+const createFooterStatisticTemplate = function (quantity) {
   return (
     `<section class="footer__statistics">
-        <p>130 291 movies inside</p>
+        <p>${quantity} movies inside</p>
       </section>`
   );
 };
 
-export default createFooterStatisticTemplate;
+export {createFooterStatisticTemplate};

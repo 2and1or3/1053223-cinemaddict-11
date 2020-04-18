@@ -6,4 +6,4 @@ const createFilmsListExtraTemplate = function (title) {
     </section>`);
 };
 
-export default createFilmsListExtraTemplate;
+export {createFilmsListExtraTemplate};
