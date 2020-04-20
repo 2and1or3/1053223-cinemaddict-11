@@ -8,6 +8,7 @@ import DetailsComponent from './components/details-popup.js';
 import FooterStatisticComponent from './components/footer-statistic.js';
 import ContentContainerComponent from './components/content-container.js';
 import FilmsListComponent from './components/films-list.js';
+import NoFilmsComponent from './components/no-films.js';
 
 import {render} from './utils.js';
 
@@ -17,6 +18,9 @@ import {generateFilters} from './mock/filter.js';
 const CARDS_STEP = 5;
 // const TOP_CARD_COUNT = 2;
 // const MOST_CARD_COUNT = 2;
+const PRESS_KEY = {
+  ESC: 27,
+};
 
 const EXTRA_TYPES = {
   TOP: `Top rated`,
@@ -32,6 +36,8 @@ const filters = generateFilters();
 const cardsCount = films.length;
 
 
+const isEmptyData = () => !cardsCount;
+
 const header = document.querySelector(`.header`);
 render(header, new ProfileComponent().getElement());
 
@@ -44,15 +50,24 @@ const renderCard = (container, card) => {
   const cardComponent = new CardComponent(card);
   render(container, cardComponent.getElement());
 
+  const onEscPress = (evt) => {
+    evt.preventDefault();
+    if (evt.keyCode === PRESS_KEY.ESC) {
+      closePopup(evt);
+    }
+  };
+
   const openPopup = (evt) => {
     evt.preventDefault();
     container.append(detailsComponent.getElement());
     closeDetails.addEventListener(`click`, closePopup);
+    document.addEventListener(`keydown`, onEscPress);
   };
 
   const closePopup = (evt) => {
     evt.preventDefault();
     detailsComponent.getElement().remove();
+    document.removeEventListener(`keydown`, onEscPress);
   };
 
   const addListeners = (cb, ...controls) => {
@@ -85,48 +100,54 @@ const renderContent = (container, cards) => {
   const contentContainerComponent = new ContentContainerComponent();
   render(container, contentContainerComponent.getElement());
 
-  const filmsListComponent = new FilmsListComponent();
-  render(contentContainerComponent.getElement(), filmsListComponent.getElement());
-  const filmList = filmsListComponent.getElement().querySelector(`.films-list__container`);
+  if (isEmptyData()) {
+    const noFilmsComponent = new NoFilmsComponent();
+    render(contentContainerComponent.getElement(), noFilmsComponent.getElement());
+  } else {
 
-  let visibleCards = 0;
+    const filmsListComponent = new FilmsListComponent();
+    render(contentContainerComponent.getElement(), filmsListComponent.getElement());
+    const filmList = filmsListComponent.getElement().querySelector(`.films-list__container`);
 
-  const loadMore = (begin, end) => {
-    cards
+    let visibleCards = 0;
+
+    const loadMore = (begin, end) => {
+      cards
     .slice(begin, end)
     .forEach((card) => {
       renderCard(filmList, card);
     });
 
-    const difference = end - begin;
+      const difference = end - begin;
 
-    visibleCards += difference;
-  };
+      visibleCards += difference;
+    };
 
-  loadMore(visibleCards, CARDS_STEP);
+    loadMore(visibleCards, CARDS_STEP);
 
-  const onLoadClick = (evt) => {
-    evt.preventDefault();
+    const onLoadClick = (evt) => {
+      evt.preventDefault();
 
-    const currentEnd = visibleCards + CARDS_STEP > cardsCount ? cardsCount : visibleCards + CARDS_STEP;
+      const currentEnd = visibleCards + CARDS_STEP > cardsCount ? cardsCount : visibleCards + CARDS_STEP;
 
-    loadMore(visibleCards, currentEnd);
+      loadMore(visibleCards, currentEnd);
 
-    if (currentEnd >= cardsCount) {
-      loadButtonComponent.getElement().remove();
-      loadButtonComponent.removeElement();
+      if (currentEnd >= cardsCount) {
+        loadButtonComponent.getElement().remove();
+        loadButtonComponent.removeElement();
+      }
+    };
+
+    const loadButtonComponent = new LoadButtonComponent();
+    render(contentContainerComponent.getElement(), loadButtonComponent.getElement());
+
+    loadButtonComponent.getElement().addEventListener(`click`, onLoadClick);
+
+    const extraKeys = Object.keys(extra);
+    for (const key of extraKeys) {
+      const extras = extra[key];
+      renderExtra(contentContainerComponent.getElement(), key, extras);
     }
-  };
-
-  const loadButtonComponent = new LoadButtonComponent();
-  render(contentContainerComponent.getElement(), loadButtonComponent.getElement());
-
-  loadButtonComponent.getElement().addEventListener(`click`, onLoadClick);
-
-  const extraKeys = Object.keys(extra);
-  for (const key of extraKeys) {
-    const extras = extra[key];
-    renderExtra(contentContainerComponent.getElement(), key, extras);
   }
 };
 
