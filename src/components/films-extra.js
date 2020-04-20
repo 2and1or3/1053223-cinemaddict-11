@@ -1,3 +1,5 @@
+import {createElement} from '../utils.js';
+
 const createFilmsListExtraTemplate = function (title) {
   return (
     `<section class="films-list--extra">
@@ -6,4 +8,27 @@ const createFilmsListExtraTemplate = function (title) {
     </section>`);
 };
 
-export {createFilmsListExtraTemplate};
+class FilmsExtra {
+  constructor(title) {
+    this._title = title;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmsListExtraTemplate(this._title);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+export default FilmsExtra;

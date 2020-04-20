@@ -4,7 +4,7 @@ import {FILTER_TYPES} from '../const.js';
 
 const updateFilters = () => {
   const menuCounter = {
-    [FILTER_TYPES.ALL]: `All movies`,
+    [FILTER_TYPES.ALL]: null,
     [FILTER_TYPES.WATCHLIST]: 0,
     [FILTER_TYPES.HISTORY]: 0,
     [FILTER_TYPES.FAVORITE]: 0,
@@ -34,14 +34,12 @@ const updateFilters = () => {
 const generateFilters = () => {
   const menuCounter = updateFilters();
   const filters = [];
+  const filterEntries = Object.entries(menuCounter);
 
-  for (const [title, count] of Object.entries(menuCounter)) {
-    const filter = {
-      title,
-      count,
-    };
+  for (const filter of filterEntries) {
+    const [title, count] = filter;
 
-    filters.push(filter);
+    filters.push({title, count});
   }
 
   return filters;

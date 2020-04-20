@@ -1,14 +1,14 @@
 import {createElement} from '../utils.js';
 
-const createLoadButtonTemplate = () => `<button class="films-list__show-more">Show more</button>`;
+const createContentContainer = () => `<section class="films"></section>`;
 
-class LoadButton {
+class ContentContainer {
   constructor() {
     this._element = null;
   }
 
   getTemplate() {
-    return createLoadButtonTemplate();
+    return createContentContainer();
   }
 
   getElement() {
@@ -24,4 +24,4 @@ class LoadButton {
   }
 }
 
-export default LoadButton;
+export default ContentContainer;
