@@ -1,3 +1,5 @@
+import {createElement} from '../utils.js';
+
 const getCommentTemplate = (comment) => {
   const {author, date, text, emotion} = comment;
 
@@ -47,7 +49,10 @@ const createDetailsPopuptemplate = function (film) {
 
   const genreEnding = genres.length > 1 ? `s` : ``;
 
-  const commentsMarkup = comments.map((comment) => getCommentTemplate(comment)).join(`\n`);
+  const commentsMarkup =
+  comments
+  .map((comment) => getCommentTemplate(comment))
+  .join(`\n`);
 
   return (
     `<section class="film-details">
@@ -171,4 +176,27 @@ const createDetailsPopuptemplate = function (film) {
   );
 };
 
-export {createDetailsPopuptemplate};
+class Details {
+  constructor(film) {
+    this._film = film;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createDetailsPopuptemplate(this._film);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+export default Details;

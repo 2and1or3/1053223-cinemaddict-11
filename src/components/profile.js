@@ -1,3 +1,5 @@
+import {createElement} from '../utils.js';
+
 import {FILTER_TYPES} from '../const.js';
 import {updateFilters} from '../mock/filter.js';
 
@@ -49,4 +51,26 @@ const createProfileTemplate = function () {
   );
 };
 
-export {createProfileTemplate};
+class Profile {
+  constructor() {
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createProfileTemplate();
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+export default Profile;

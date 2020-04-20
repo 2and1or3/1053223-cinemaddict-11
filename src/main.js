@@ -1,101 +1,136 @@
-import {createFilmsListExtraTemplate} from './components/films-extra.js';
-import {createProfileTemplate} from './components/profile.js';
-import {createMenuTemplate} from './components/menu.js';
-import {createSortTemplate} from './components/sort.js';
-import {createCardTemplate} from './components/card.js';
-import {createLoadButtonTemplate} from './components/load-button.js';
-import {createDetailsPopuptemplate} from './components/details-popup.js';
-import {createFooterStatisticTemplate} from './components/footer-statistic.js';
+import FilmsExtraComponent from './components/films-extra.js';
+import ProfileComponent from './components/profile.js';
+import MenuComponent from './components/menu.js';
+import SortComponent from './components/sort.js';
+import CardComponent from './components/card.js';
+import LoadButtonComponent from './components/load-button.js';
+import DetailsComponent from './components/details-popup.js';
+import FooterStatisticComponent from './components/footer-statistic.js';
+import ContentContainerComponent from './components/content-container.js';
+import FilmsListComponent from './components/films-list.js';
 
-import {films as cards} from './mock/film.js';
+import {render} from './utils.js';
+
+import {films} from './mock/film.js';
 import {generateFilters} from './mock/filter.js';
 
 const CARDS_STEP = 5;
-const TOP_CARD_COUNT = 2;
-const MOST_CARD_COUNT = 2;
-const EXTRA_TOP = `Top rated`;
-const EXTRA_MOST = `Most commented`;
+// const TOP_CARD_COUNT = 2;
+// const MOST_CARD_COUNT = 2;
+
+const EXTRA_TYPES = {
+  TOP: `Top rated`,
+  MOST: `Most commented`,
+};
+
+const extra = {
+  [EXTRA_TYPES.TOP]: [films[0], films[1]],
+  [EXTRA_TYPES.MOST]: [films[0], films[1]],
+};
 
 const filters = generateFilters();
-const cardsCount = cards.length;
+const cardsCount = films.length;
 
-const createContentContainer = function () {
-  return `<section class="films"></section>`;
-};
-
-const createFilmsList = function () {
-  return (
-    `<section class="films-list">
-        <h2 class="films-list__title visually-hidden">All movies. Upcoming</h2>
-        <div class="films-list__container"></div>
-     </section>`);
-};
-
-const render = function (container, template, place = `beforeend`) {
-  container.insertAdjacentHTML(place, template);
-};
 
 const header = document.querySelector(`.header`);
-
-render(header, createProfileTemplate(filters));
+render(header, new ProfileComponent().getElement());
 
 const main = document.querySelector(`.main`);
+render(main, new MenuComponent(filters).getElement());
+render(main, new SortComponent().getElement());
 
-render(main, createMenuTemplate(filters));
-render(main, createSortTemplate());
 
-render(main, createContentContainer());
+const renderCard = (container, card) => {
+  const cardComponent = new CardComponent(card);
+  render(container, cardComponent.getElement());
 
-const content = main.querySelector(`.films`);
-render(content, createFilmsList());
-const films = content.querySelector(`.films-list`);
-const filmsContainer = films.querySelector(`.films-list__container`);
+  const openPopup = (evt) => {
+    evt.preventDefault();
+    container.append(detailsComponent.getElement());
+    closeDetails.addEventListener(`click`, closePopup);
+  };
 
-let visibleCards = 0;
+  const closePopup = (evt) => {
+    evt.preventDefault();
+    detailsComponent.getElement().remove();
+  };
 
-const loadCard = () => {
-  const newVisibleCards = (visibleCards + CARDS_STEP) > cardsCount ? cardsCount : visibleCards + CARDS_STEP;
+  const addListeners = (cb, ...controls) => {
+    controls.forEach((control) => {
+      control.addEventListener(`click`, cb);
+    });
+  };
 
-  for (let i = visibleCards; i < newVisibleCards; i++) {
-    render(filmsContainer, createCardTemplate(cards[i]));
-  }
-  visibleCards = newVisibleCards;
+  const poster = cardComponent.getElement().querySelector(`.film-card__poster`);
+  const title = cardComponent.getElement().querySelector(`.film-card__title`);
+  const comment = cardComponent.getElement().querySelector(`.film-card__comments`);
+  addListeners(openPopup, poster, title, comment);
+
+  const detailsComponent = new DetailsComponent(card);
+  const closeDetails = detailsComponent.getElement().querySelector(`.film-details__close-btn`);
 };
 
-loadCard();
+const renderExtra = (container, title, cards) => {
+  const filmsExtraComponent = new FilmsExtraComponent(title);
+  render(container, filmsExtraComponent.getElement());
 
-render(films, createLoadButtonTemplate());
+  const filmsList = filmsExtraComponent.getElement().querySelector(`.films-list__container`);
 
-const loadButton = films.querySelector(`.films-list__show-more`);
+  cards.forEach((card) => {
+    renderCard(filmsList, card);
+  });
+};
 
-loadButton.addEventListener(`click`, () => {
-  loadCard();
+const renderContent = (container, cards) => {
+  const contentContainerComponent = new ContentContainerComponent();
+  render(container, contentContainerComponent.getElement());
 
-  if (visibleCards >= cardsCount) {
-    loadButton.remove();
+  const filmsListComponent = new FilmsListComponent();
+  render(contentContainerComponent.getElement(), filmsListComponent.getElement());
+  const filmList = filmsListComponent.getElement().querySelector(`.films-list__container`);
+
+  let visibleCards = 0;
+
+  const loadMore = (begin, end) => {
+    cards
+    .slice(begin, end)
+    .forEach((card) => {
+      renderCard(filmList, card);
+    });
+
+    const difference = end - begin;
+
+    visibleCards += difference;
+  };
+
+  loadMore(visibleCards, CARDS_STEP);
+
+  const onLoadClick = (evt) => {
+    evt.preventDefault();
+
+    const currentEnd = visibleCards + CARDS_STEP > cardsCount ? cardsCount : visibleCards + CARDS_STEP;
+
+    loadMore(visibleCards, currentEnd);
+
+    if (currentEnd >= cardsCount) {
+      loadButtonComponent.getElement().remove();
+      loadButtonComponent.removeElement();
+    }
+  };
+
+  const loadButtonComponent = new LoadButtonComponent();
+  render(contentContainerComponent.getElement(), loadButtonComponent.getElement());
+
+  loadButtonComponent.getElement().addEventListener(`click`, onLoadClick);
+
+  const extraKeys = Object.keys(extra);
+  for (const key of extraKeys) {
+    const extras = extra[key];
+    renderExtra(contentContainerComponent.getElement(), key, extras);
   }
-});
+};
 
-
-render(content, createFilmsListExtraTemplate(EXTRA_TOP));
-const filmsTop = content.querySelectorAll(`.films-list--extra`)[0];
-const filmsTopContainer = filmsTop.querySelector(`.films-list__container`);
-
-for (let i = 0; i < TOP_CARD_COUNT; i++) {
-  render(filmsTopContainer, createCardTemplate(cards[i]));
-}
-
-render(content, createFilmsListExtraTemplate(EXTRA_MOST));
-const filmsMost = content.querySelectorAll(`.films-list--extra`)[1];
-const filmsMostContainer = filmsMost.querySelector(`.films-list__container`);
-
-for (let i = 0; i < MOST_CARD_COUNT; i++) {
-  render(filmsMostContainer, createCardTemplate(cards[i]));
-}
+renderContent(main, films);
 
 const footer = document.querySelector(`.footer`);
-render(footer, createFooterStatisticTemplate(cards.length));
-
-render(footer, createDetailsPopuptemplate(cards[0]), `afterend`);
-const details = document.querySelector(`.film-details`);
-details.style = `display: none`;
+render(footer, new FooterStatisticComponent(cardsCount).getElement());

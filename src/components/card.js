@@ -1,3 +1,5 @@
+import {createElement} from '../utils.js';
+
 const DESCRIPTION_LENGTH = 139;
 const DESCRIPTION_END = `…`;
 const createCardTemplate = function (film) {
@@ -29,4 +31,27 @@ const createCardTemplate = function (film) {
   );
 };
 
-export {createCardTemplate};
+class Card {
+  constructor(film) {
+    this._film = film;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createCardTemplate(this._film);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+export default Card;

@@ -1,3 +1,5 @@
+import {createElement} from '../utils.js';
+
 const createFilterTemplate = (filter, isChecked) => {
   const {title, count} = filter;
   const activeClass = isChecked ? `main-navigation__item--active` : ``;
@@ -9,7 +11,10 @@ const createFilterTemplate = (filter, isChecked) => {
 };
 
 const createMenuTemplate = function (filters) {
-  const filterMarkup = filters.map((filter, i) => createFilterTemplate(filter, i === 0)).join(`\n`);
+  const filterMarkup =
+  filters
+  .map((filter, i) => createFilterTemplate(filter, i === 0))
+  .join(`\n`);
 
   return (
     `<nav class="main-navigation">
@@ -21,4 +26,27 @@ const createMenuTemplate = function (filters) {
   );
 };
 
-export {createMenuTemplate};
+class Menu {
+  constructor(filters) {
+    this._filters = filters;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createMenuTemplate(this._filters);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+export default Menu;

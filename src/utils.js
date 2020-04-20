@@ -60,6 +60,17 @@ const timeCommentFormat = (date) => {
   return `${hours}:${minutes}`;
 };
 
+const createElement = (template) => {
+  const container = document.createElement(`div`);
+  container.innerHTML = template;
+
+  return container.firstChild;
+};
+
+const render = (container, element) => {
+  container.append(element);
+};
+
 export {
   getRandomArray,
   getRandomInteger,
@@ -67,5 +78,7 @@ export {
   timeCardFormat,
   dateCommentFormat,
   timeCommentFormat,
-  getRandomDate
+  getRandomDate,
+  createElement,
+  render
 };
