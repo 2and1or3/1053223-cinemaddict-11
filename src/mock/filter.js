@@ -1,48 +1,51 @@
-import {films} from './film.js';
-import {FILTER_TYPES} from '../const.js';
-
-
-const updateFilters = () => {
-  const menuCounter = {
-    [FILTER_TYPES.ALL]: null,
-    [FILTER_TYPES.WATCHLIST]: 0,
-    [FILTER_TYPES.HISTORY]: 0,
-    [FILTER_TYPES.FAVORITE]: 0,
-  };
-
-  films.forEach((card) => {
-
-    const {isWatchList, isFavorite, isWatched} = card;
-
-    if (isWatchList) {
-      menuCounter[FILTER_TYPES.WATCHLIST]++;
-    }
-
-    if (isFavorite) {
-      menuCounter[FILTER_TYPES.HISTORY]++;
-    }
-
-    if (isWatched) {
-      menuCounter[FILTER_TYPES.FAVORITE]++;
-    }
-
-  });
-
-  return menuCounter;
-};
-
-const generateFilters = () => {
-  const menuCounter = updateFilters();
-  const filters = [];
-  const filterEntries = Object.entries(menuCounter);
-
-  for (const filter of filterEntries) {
-    const [title, count] = filter;
-
-    filters.push({title, count});
-  }
-
-  return filters;
-};
-
-export {generateFilters, updateFilters};
+// import {films} from './film.js';
+// import {FILTER_TYPES} from '../const.js';
+//
+//
+// const generateFilters = () => {
+//   const filters = {
+//     [FILTER_TYPES.ALL]: {
+//       title: `All movies`,
+//       count: null,
+//     },
+//     [FILTER_TYPES.WATCHLIST]: {
+//       title: `Watchlist`,
+//       count: null,
+//     },
+//     [FILTER_TYPES.HISTORY]: {
+//       title: `History`,
+//       count: null,
+//     },
+//     [FILTER_TYPES.FAVORITE]: {
+//       title: `Favorite`,
+//       count: null,
+//     },
+//   };
+//
+//   return filters;
+// };
+//
+// const updateFilters = () => {
+//   const filters = generateFilters();
+//
+//   films.forEach((card) => {
+//     const {isWatchList, isFavorite, isWatched} = card;
+//
+//     if (isWatchList) {
+//       filters[FILTER_TYPES.WATCHLIST].count++;
+//     }
+//
+//     if (isFavorite) {
+//       filters[FILTER_TYPES.HISTORY].count++;
+//     }
+//
+//     if (isWatched) {
+//       filters[FILTER_TYPES.FAVORITE].count++;
+//     }
+//
+//   });
+//
+//   return filters;
+// };
+//
+// export {generateFilters, updateFilters};

@@ -1,19 +1,22 @@
 import {createElement} from '../utils.js';
 
-const createFilterTemplate = (filter, isChecked) => {
+const createFilterTemplate = (key, filter, isChecked) => {
   const {title, count} = filter;
   const activeClass = isChecked ? `main-navigation__item--active` : ``;
 
-  const template = !count ? `<a href="#${title}" class="main-navigation__item ${activeClass}">All movies</a>` :
-    `<a href="#${title}" class="main-navigation__item ${activeClass}">${title[0].toUpperCase() + title.slice(1)} <span class="main-navigation__item-count">${count}</span></a>`;
-
-  return template;
+  return (
+    `<a href="#${key}" class="main-navigation__item ${activeClass}">${title}
+      ${!count ? `` : `<span class="main-navigation__item-count">${count}</span>`}
+    </a>`
+  );
 };
 
 const createMenuTemplate = function (filters) {
+  const filtersKeys = Object.keys(filters);
+
   const filterMarkup =
-  filters
-  .map((filter, i) => createFilterTemplate(filter, i === 0))
+  filtersKeys
+  .map((key, i) => createFilterTemplate(key, filters[key], i === 0))
   .join(`\n`);
 
   return (
