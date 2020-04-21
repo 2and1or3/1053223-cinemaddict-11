@@ -23,7 +23,7 @@ const DESCRIPTIONS = [
   `Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.`
 ];
 
-const CARD_COUNT = 20;
+const CARD_COUNT = 19;
 const MAX_RATING = 10;
 const MAX_AGE_LIMIT = 18;
 
@@ -71,6 +71,6 @@ const generateFilms = (count) => {
   return cards;
 };
 
-const films = generateFilms(CARD_COUNT);
+const filmsData = generateFilms(CARD_COUNT);
 
-export {films};
+export {filmsData};

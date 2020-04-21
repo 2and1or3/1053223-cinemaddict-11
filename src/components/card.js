@@ -2,13 +2,16 @@ import {createElement} from '../utils.js';
 
 const DESCRIPTION_LENGTH = 139;
 const DESCRIPTION_END = `…`;
+const CONTROL_ACTIVE_CLASS = `film-card__controls-item--active`;
 const createCardTemplate = function (film) {
 
-  const {poster, title, rating, date, genres, description, comments, duration} = film;
+  const {poster, title, rating, date, genres, description, comments, duration, isFavorite, isWatchList, isWatched} = film;
 
   const year = date.slice(-4);
+  const isBigDescription = description.length > DESCRIPTION_LENGTH;
+  const descriptionCover = (desc) => desc.slice(0, DESCRIPTION_LENGTH) + DESCRIPTION_END;
 
-  let text = description.length > DESCRIPTION_LENGTH ? description.slice(0, DESCRIPTION_LENGTH) + DESCRIPTION_END : description;
+  let text = isBigDescription ? descriptionCover(description) : description;
 
   return (
     `<article class="film-card">
@@ -23,9 +26,9 @@ const createCardTemplate = function (film) {
       <p class="film-card__description">${text}</p>
       <a class="film-card__comments">${comments.length} comments</a>
       <form class="film-card__controls">
-        <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist">Add to watchlist</button>
-        <button class="film-card__controls-item button film-card__controls-item--mark-as-watched">Mark as watched</button>
-        <button class="film-card__controls-item button film-card__controls-item--favorite">Mark as favorite</button>
+        <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${isWatchList ? CONTROL_ACTIVE_CLASS : ``}">Add to watchlist</button>
+        <button class="film-card__controls-item button film-card__controls-item--mark-as-watched ${isWatched ? CONTROL_ACTIVE_CLASS : ``}">Mark as watched</button>
+        <button class="film-card__controls-item button film-card__controls-item--favorite ${isFavorite ? CONTROL_ACTIVE_CLASS : ``}">Mark as favorite</button>
       </form>
     </article>`
   );

@@ -3,8 +3,8 @@ import {createElement} from '../utils.js';
 const getCommentTemplate = (comment) => {
   const {author, date, text, emotion} = comment;
 
-  const template = (`
-  <li class="film-details__comment">
+  return (
+    `<li class="film-details__comment">
     <span class="film-details__comment-emoji">
       <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">
     </span>
@@ -16,9 +16,8 @@ const getCommentTemplate = (comment) => {
         <button class="film-details__comment-delete">Delete</button>
       </p>
     </div>
-  </li>`);
-
-  return template;
+  </li>`
+  );
 };
 
 const createGenreTemplate = (genre) => `<span class="film-details__genre">${genre}</span>`;
@@ -50,9 +49,9 @@ const createDetailsPopuptemplate = function (film) {
   const genreEnding = genres.length > 1 ? `s` : ``;
 
   const commentsMarkup =
-  comments
-  .map((comment) => getCommentTemplate(comment))
-  .join(`\n`);
+    comments
+      .map((comment) => getCommentTemplate(comment))
+      .join(`\n`);
 
   return (
     `<section class="film-details">
