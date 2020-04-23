@@ -1,4 +1,4 @@
-import {createElement} from '../utils.js';
+import AbstractComponent from './abstract-component.js';
 
 const getCommentTemplate = (comment) => {
   const {author, date, text, emotion} = comment;
@@ -175,26 +175,33 @@ const createDetailsPopuptemplate = function (film) {
   );
 };
 
-class Details {
+class Details extends AbstractComponent {
   constructor(film) {
+    super();
     this._film = film;
-    this._element = null;
+    this._outerContainer = document.querySelector(`.films`);
   }
 
   getTemplate() {
     return createDetailsPopuptemplate(this._film);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  setClickHandler(cb) {
+    this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, cb);
   }
 
-  removeElement() {
-    this._element = null;
+  getOuterContainer() {
+    return this._outerContainer;
+  }
+
+  show() {
+    if (this._outerContainer) {
+      this._outerContainer.append(this.getElement());
+    }
+  }
+
+  hide() {
+    this.getElement().remove();
   }
 }
 

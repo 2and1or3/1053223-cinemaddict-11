@@ -1,4 +1,4 @@
-import {createElement} from '../utils.js';
+import AbstractComponent from './abstract-component.js';
 
 const createFooterStatisticTemplate = function (quantity) {
   return (
@@ -8,26 +8,14 @@ const createFooterStatisticTemplate = function (quantity) {
   );
 };
 
-class FooterStatistic {
+class FooterStatistic extends AbstractComponent {
   constructor(quantity) {
+    super();
     this._quantity = quantity;
-    this._element = null;
   }
 
   getTemplate() {
     return createFooterStatisticTemplate(this._quantity);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 

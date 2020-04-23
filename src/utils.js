@@ -3,6 +3,11 @@ import {MONTH_NAMES, DATE_YEAR} from './const.js';
 const DAYS = 31;
 const HOURS = 24;
 const MINUTES = 60;
+const PRESS_KEY = {
+  ESC: 27,
+};
+
+const isEscPress = (evt) => evt.keyCode === PRESS_KEY.ESC;
 
 const getRandomArray = (arr) => {
   const count = Math.round(Math.random() * (arr.length - 1)) + 1;
@@ -67,8 +72,17 @@ const createElement = (template) => {
   return container.firstChild;
 };
 
-const render = (container, element) => {
-  container.append(element);
+const render = (containerElement, component) => {
+  containerElement.append(component.getElement());
+};
+
+const removeComponent = (component) => {
+  component.getElement().remove();
+  component.removeElement();
+};
+
+const addListeners = (cb, ...controls) => {
+  controls.forEach((control) => control.addEventListener(`click`, cb));
 };
 
 export {
@@ -80,5 +94,8 @@ export {
   timeCommentFormat,
   getRandomDate,
   createElement,
-  render
+  render,
+  removeComponent,
+  addListeners,
+  isEscPress,
 };
