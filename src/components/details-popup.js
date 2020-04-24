@@ -1,4 +1,5 @@
 import AbstractComponent from './abstract-component.js';
+import {dateCardFormat} from '../utils.js';
 
 const getCommentTemplate = (comment) => {
   const {author, date, text, emotion} = comment;
@@ -47,7 +48,7 @@ const createDetailsPopuptemplate = function (film) {
   } = film;
 
   const genreEnding = genres.length > 1 ? `s` : ``;
-
+  const dateFormated = dateCardFormat(date);
   const commentsMarkup =
     comments
       .map((comment) => getCommentTemplate(comment))
@@ -94,7 +95,7 @@ const createDetailsPopuptemplate = function (film) {
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Release Date</td>
-                  <td class="film-details__cell">${date}</td>
+                  <td class="film-details__cell">${dateFormated}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Runtime</td>

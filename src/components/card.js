@@ -8,7 +8,8 @@ const createCardTemplate = function (film) {
 
   const {poster, title, rating, date, genres, description, comments, duration, isFavorite, isWatchList, isWatched} = film;
 
-  const year = date.slice(-4);
+  const year = date.getFullYear();
+
   const isBigDescription = description.length > DESCRIPTION_LENGTH;
   const descriptionCover = (desc) => desc.slice(0, DESCRIPTION_LENGTH) + DESCRIPTION_END;
 

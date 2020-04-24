@@ -1,4 +1,4 @@
-import {MONTH_NAMES, DATE_YEAR} from './const.js';
+import {MONTH_NAMES, DATE_YEAR, RENDER_METHODS} from './const.js';
 
 const DAYS = 31;
 const HOURS = 24;
@@ -72,8 +72,16 @@ const createElement = (template) => {
   return container.firstChild;
 };
 
-const render = (containerElement, component) => {
-  containerElement.append(component.getElement());
+const render = (target, component, method = RENDER_METHODS.APPEND) => {
+
+  switch (method) {
+    case RENDER_METHODS.APPEND:
+      target.append(component.getElement());
+      break;
+    case RENDER_METHODS.AFTER:
+      target.after(component.getElement());
+      break;
+  }
 };
 
 const removeComponent = (component) => {
