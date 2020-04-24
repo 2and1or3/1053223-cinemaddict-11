@@ -1,26 +1,10 @@
-import {createElement} from '../utils.js';
+import AbstractComponent from './abstract-component.js';
 
 const createContentContainer = () => `<section class="films"></section>`;
 
-class ContentContainer {
-  constructor() {
-    this._element = null;
-  }
-
+class ContentContainer extends AbstractComponent {
   getTemplate() {
     return createContentContainer();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 

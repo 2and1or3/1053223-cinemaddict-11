@@ -1,4 +1,4 @@
-import {createElement} from '../utils.js';
+import AbstractComponent from './abstract-component.js';
 
 const createFilmsList = function () {
   return (
@@ -9,25 +9,22 @@ const createFilmsList = function () {
   );
 };
 
-class FilmsList {
+class FilmsList extends AbstractComponent {
   constructor() {
-    this._element = null;
+    super();
+    this._innerContainer = null;
   }
 
   getTemplate() {
     return createFilmsList();
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
+  getInnerContainer() {
+    if (!this._innerContainer) {
+      this._innerContainer = this.getElement().querySelector(`.films-list__container`);
     }
 
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+    return this._innerContainer;
   }
 }
 

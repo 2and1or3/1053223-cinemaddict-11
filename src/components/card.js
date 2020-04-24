@@ -1,4 +1,5 @@
-import {createElement} from '../utils.js';
+import AbstractComponent from './abstract-component.js';
+import {addListeners} from '../utils.js';
 
 const DESCRIPTION_LENGTH = 139;
 const DESCRIPTION_END = `…`;
@@ -34,26 +35,21 @@ const createCardTemplate = function (film) {
   );
 };
 
-class Card {
+class Card extends AbstractComponent {
   constructor(film) {
+    super();
     this._film = film;
-    this._element = null;
   }
 
   getTemplate() {
     return createCardTemplate(this._film);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  setClickHandler(cb) {
+    const poster = this.getElement().querySelector(`.film-card__poster`);
+    const title = this.getElement().querySelector(`.film-card__title`);
+    const comment = this.getElement().querySelector(`.film-card__comments`);
+    addListeners(cb, poster, title, comment);
   }
 }
 
