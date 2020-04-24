@@ -1,6 +1,6 @@
 import {createElement} from '../utils.js';
 
-const ABSTRACT_ERRORS = {
+const ERRORS = {
   INSTANCE: `Нельзя создавать экземпляры абстрактного класса`,
   IMPLEMENT: `Метод getTemplate не имплементирован`,
 };
@@ -8,14 +8,14 @@ const ABSTRACT_ERRORS = {
 class AbstractComponent {
   constructor() {
     if (new.target === AbstractComponent) {
-      throw new Error(ABSTRACT_ERRORS.INSTANCE);
+      throw new Error(ERRORS.INSTANCE);
     }
 
     this._element = null;
   }
 
   getTemplate() {
-    throw new Error(ABSTRACT_ERRORS.IMPLEMENT);
+    throw new Error(ERRORS.IMPLEMENT);
   }
 
   getElement() {

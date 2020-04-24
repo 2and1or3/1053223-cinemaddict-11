@@ -6,7 +6,7 @@ const createFilterTemplate = (key, filter, isChecked) => {
 
   return (
     `<a href="#${key}" class="main-navigation__item ${activeClass}">${title}
-      ${!count ? `` : `<span class="main-navigation__item-count">${count}</span>`}
+      ${!count ? `` : `<span class="main-navigation__item-count">${+count}</span>`}
     </a>`
   );
 };
