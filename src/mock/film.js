@@ -1,4 +1,4 @@
-import {getRandomArray, getRandomInteger, dateCardFormat, timeCardFormat, getRandomDate} from '../utils.js';
+import {getRandomArray, getRandomInteger, timeCardFormat, getRandomDate} from '../utils.js';
 import {generateComments} from './comment.js';
 const POSTERS = [
   `./images/posters/made-for-each-other.png`,
@@ -47,7 +47,7 @@ const generateFilm = () => {
       scenarists: getRandomArray(SCENARISTS),
       cast: getRandomArray(CASTS),
     },
-    date: dateCardFormat(randomDate),
+    date: randomDate,
     duration: timeCardFormat(getRandomInteger(DURATION.min, DURATION.max)),
     country: COUNTRIES[Math.round(Math.random() * (COUNTRIES.length - 1))],
     genres: getRandomArray(GENRES),

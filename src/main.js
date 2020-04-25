@@ -1,6 +1,5 @@
 import ProfileComponent from './components/profile.js';
 import MenuComponent from './components/menu.js';
-import SortComponent from './components/sort.js';
 import FooterStatisticComponent from './components/footer-statistic.js';
 
 import PageController from './controllers/page-controller.js';
@@ -59,7 +58,6 @@ render(header, new ProfileComponent(user));
 
 const main = document.querySelector(`.main`);
 render(main, new MenuComponent(filters));
-render(main, new SortComponent());
 
 
 const pageController = new PageController(main);

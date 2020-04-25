@@ -25,4 +25,9 @@ const FILTER_TYPES = {
   FAVORITE: `favorite`,
 };
 
-export {MONTH_NAMES, DATE_YEAR, FILTER_TYPES};
+const RENDER_METHODS = {
+  APPEND: `append`,
+  AFTER: `after`,
+};
+
+export {MONTH_NAMES, DATE_YEAR, FILTER_TYPES, RENDER_METHODS};
