@@ -1,5 +1,10 @@
-import AbstractComponent from './abstract-component.js';
+import AbstractSmartComponent from './abstract-smart-component.js';
 import {dateCardFormat} from '../utils.js';
+
+const EMOJI_SOURCE = {
+  PREFIX: `images/emoji/`,
+  POSTFIX: `.png`,
+};
 
 const getCommentTemplate = (comment) => {
   const {author, date, text, emotion} = comment;
@@ -176,10 +181,14 @@ const createDetailsPopuptemplate = function (film) {
   );
 };
 
-class Details extends AbstractComponent {
+class Details extends AbstractSmartComponent {
   constructor(film) {
     super();
     this._film = film;
+    this._isWatchList = film.isWatchList;
+    this._isWatched = film.isWatched;
+    this._isFavorite = film.isFavorite;
+    this._currentEmotion = null;
     this._outerContainer = document.querySelector(`.films`);
   }
 
@@ -187,8 +196,45 @@ class Details extends AbstractComponent {
     return createDetailsPopuptemplate(this._film);
   }
 
-  setClickHandler(cb) {
+  setCloseClickHandler(cb) {
     this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, cb);
+  }
+
+
+  _setWatchListClickHandler() {
+    this.getElement().querySelector(`#watchlist`).addEventListener(`click`, () => {
+      this._isWatchList = !this._isWatchList;
+
+    });
+  }
+
+  _setHistoryClickHandler() {
+    this.getElement().querySelector(`#watched`).addEventListener(`click`, () => {
+      this._isWatched = !this._isWatched;
+    });
+  }
+
+  _setFavoriteClickHandler() {
+    this.getElement().querySelector(`#favorite`).addEventListener(`click`, () => {
+      this._isFavorite = !this._isFavorite;
+    });
+  }
+
+  _setCommentEmojiChangeHandler() {
+    const container = this.getElement().querySelector(`.film-details__emoji-list`);
+    const emojiHolder = this.getElement().querySelector(`.film-details__add-emoji-label img`);
+    container.addEventListener(`change`, (evt) => {
+      emojiHolder.setAttribute(`src`, `${EMOJI_SOURCE.PREFIX}${evt.target.value}${EMOJI_SOURCE.POSTFIX}`);
+      emojiHolder.setAttribute(`alt`, `emoji-${evt.target.value}`);
+      this._currentEmotion = evt.target.value;
+    });
+  }
+
+  recoveryListeners() {
+    this._setWatchListClickHandler();
+    this._setHistoryClickHandler();
+    this._setFavoriteClickHandler();
+    this._setCommentEmojiChangeHandler();
   }
 
   getOuterContainer() {
@@ -198,6 +244,7 @@ class Details extends AbstractComponent {
   show() {
     if (this._outerContainer) {
       this._outerContainer.append(this.getElement());
+      this.recoveryListeners();
     }
   }
 
