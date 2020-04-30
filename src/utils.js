@@ -1,5 +1,7 @@
 import {MONTH_NAMES, DATE_YEAR, RENDER_METHODS} from './const.js';
 
+import moment from "moment";
+
 const DAYS = 31;
 const HOURS = 24;
 const MINUTES = 60;
@@ -36,33 +38,29 @@ const getRandomDate = () => {
   return date;
 };
 
-const dateCardFormat = (date) => {
-  const day = String(date.getDate()).padStart(2, 0);
-  const month = MONTH_NAMES[date.getMonth()];
-  const year = date.getFullYear();
+const yearCardFormat = (date) => {
+  const year = moment(date).format(`YYYY`);
+  return year;
+};
 
-  return `${day} ${month} ${year}`;
+const dateDetailsFormat = (date) => {
+  const detailsDate = moment(date).format(`DD MMMM YYYY`);
+
+  return detailsDate;
 };
 
 const dateCommentFormat = (date) => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, 0);
-  const day = String(date.getDate()).padStart(2, 0);
+  const commentDate = moment(date).format(`YYYY/MM/DD HH:mm`);
 
-  return `${year}/${month}/${day}`;
+  return commentDate;
 };
 
-const timeCardFormat = (minutes) => {
-  const hours = Math.floor(minutes / 60);
-  minutes = minutes % 60;
+const durationFormat = (minutes) => {
+  const duration = moment.duration(minutes, `minutes`);
+  const durationHours = duration.hours();
+  const durationMinutes = duration.minutes();
 
-  return `${hours}h ${minutes}m`;
-};
-
-const timeCommentFormat = (date) => {
-  const hours = String(date.getHours()).padStart(2, 0);
-  const minutes = String(date.getMinutes()).padStart(2, 0);
-  return `${hours}:${minutes}`;
+  return `${durationHours}h ${durationMinutes}m`;
 };
 
 const createElement = (template) => {
@@ -96,14 +94,14 @@ const addListeners = (cb, ...controls) => {
 export {
   getRandomArray,
   getRandomInteger,
-  dateCardFormat,
-  timeCardFormat,
+  dateDetailsFormat,
+  durationFormat,
   dateCommentFormat,
-  timeCommentFormat,
   getRandomDate,
   createElement,
   render,
   removeComponent,
   addListeners,
   isEscPress,
+  yearCardFormat,
 };

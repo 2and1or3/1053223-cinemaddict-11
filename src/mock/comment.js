@@ -1,4 +1,4 @@
-import {dateCommentFormat, timeCommentFormat, getRandomDate} from '../utils.js';
+import {getRandomDate} from '../utils.js';
 
 const NAMES = [`Jack`, `Marina`, `Martin`, `Kate`];
 const EMOJIES = [`smile`, `sleeping`, `puke`, `angry`];
@@ -13,7 +13,7 @@ const generateComment = () => {
     text: TEXT,
     emotion: EMOJIES[Math.round(Math.random() * (EMOJIES.length - 1))],
     author: NAMES[Math.round(Math.random() * (NAMES.length - 1))],
-    date: `${dateCommentFormat(randomDate)} ${timeCommentFormat(randomDate)}`,
+    date: randomDate,
   };
 };
 

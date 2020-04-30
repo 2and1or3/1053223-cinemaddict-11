@@ -1,5 +1,5 @@
 import AbstractComponent from './abstract-component.js';
-import {addListeners} from '../utils.js';
+import {addListeners, yearCardFormat, durationFormat} from '../utils.js';
 
 const DESCRIPTION_LENGTH = 139;
 const DESCRIPTION_END = `…`;
@@ -8,7 +8,8 @@ const createCardTemplate = function (film) {
 
   const {poster, title, rating, date, genres, description, comments, duration, isFavorite, isWatchList, isWatched} = film;
 
-  const year = date.getFullYear();
+  const year = yearCardFormat(date);
+  const filmDuration = durationFormat(duration);
 
   const isBigDescription = description.length > DESCRIPTION_LENGTH;
   const descriptionCover = (desc) => desc.slice(0, DESCRIPTION_LENGTH) + DESCRIPTION_END;
@@ -21,7 +22,7 @@ const createCardTemplate = function (film) {
       <p class="film-card__rating">${rating}</p>
       <p class="film-card__info">
         <span class="film-card__year">${year}</span>
-        <span class="film-card__duration">${duration}</span>
+        <span class="film-card__duration">${filmDuration}</span>
         <span class="film-card__genre">${genres.join(`, `)}</span>
       </p>
       <img src="${poster}" alt="" class="film-card__poster">
