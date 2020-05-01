@@ -1,13 +1,16 @@
 import AbstractSmartComponent from './abstract-smart-component.js';
-import {dateCardFormat} from '../utils.js';
+import {dateDetailsFormat, durationFormat, dateCommentFormat} from '../utils.js';
 
 const EMOJI_SOURCE = {
   PREFIX: `images/emoji/`,
   POSTFIX: `.png`,
+  WIDTH: 55,
+  HEIGHT: 55,
 };
 
 const getCommentTemplate = (comment) => {
   const {author, date, text, emotion} = comment;
+  const commentDate = dateCommentFormat(date);
 
   return (
     `<li class="film-details__comment">
@@ -18,7 +21,7 @@ const getCommentTemplate = (comment) => {
       <p class="film-details__comment-text">${text}</p>
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${author}</span>
-        <span class="film-details__comment-day">${date}</span>
+        <span class="film-details__comment-day">${commentDate}</span>
         <button class="film-details__comment-delete">Delete</button>
       </p>
     </div>
@@ -53,7 +56,8 @@ const createDetailsPopuptemplate = function (film) {
   } = film;
 
   const genreEnding = genres.length > 1 ? `s` : ``;
-  const dateFormated = dateCardFormat(date);
+  const dateFormated = dateDetailsFormat(date);
+  const filmDuration = durationFormat(duration);
   const commentsMarkup =
     comments
       .map((comment) => getCommentTemplate(comment))
@@ -104,7 +108,7 @@ const createDetailsPopuptemplate = function (film) {
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Runtime</td>
-                  <td class="film-details__cell">${duration}</td>
+                  <td class="film-details__cell">${filmDuration}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Country</td>
@@ -145,11 +149,11 @@ const createDetailsPopuptemplate = function (film) {
 
             <div class="film-details__new-comment">
               <div for="add-emoji" class="film-details__add-emoji-label">
-                <img src="images/emoji/smile.png" width="55" height="55" alt="emoji-smile">
+
               </div>
 
               <label class="film-details__comment-label">
-                <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">Great movie!</textarea>
+                <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
               </label>
 
               <div class="film-details__emoji-list">
@@ -190,6 +194,7 @@ class Details extends AbstractSmartComponent {
     this._isFavorite = film.isFavorite;
     this._currentEmotion = null;
     this._outerContainer = document.querySelector(`.films`);
+    this._emojiElement = null;
   }
 
   getTemplate() {
@@ -222,10 +227,18 @@ class Details extends AbstractSmartComponent {
 
   _setCommentEmojiChangeHandler() {
     const container = this.getElement().querySelector(`.film-details__emoji-list`);
-    const emojiHolder = this.getElement().querySelector(`.film-details__add-emoji-label img`);
+    const emojiHolder = this.getElement().querySelector(`.film-details__add-emoji-label`);
+
     container.addEventListener(`change`, (evt) => {
-      emojiHolder.setAttribute(`src`, `${EMOJI_SOURCE.PREFIX}${evt.target.value}${EMOJI_SOURCE.POSTFIX}`);
-      emojiHolder.setAttribute(`alt`, `emoji-${evt.target.value}`);
+      if (!this._emojiElement) {
+        this._emojiElement = document.createElement(`img`);
+        this._emojiElement.width = EMOJI_SOURCE.WIDTH;
+        this._emojiElement.height = EMOJI_SOURCE.HEIGHT;
+        emojiHolder.append(this._emojiElement);
+      }
+
+      this._emojiElement.setAttribute(`src`, `${EMOJI_SOURCE.PREFIX}${evt.target.value}${EMOJI_SOURCE.POSTFIX}`);
+      this._emojiElement.setAttribute(`alt`, `emoji-${evt.target.value}`);
       this._currentEmotion = evt.target.value;
     });
   }
