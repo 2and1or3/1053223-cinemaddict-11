@@ -1,67 +1,45 @@
 import ProfileComponent from './components/profile.js';
-import MenuComponent from './components/menu.js';
 import FooterStatisticComponent from './components/footer-statistic.js';
 
 import PageController from './controllers/page-controller.js';
+import FiltersController from './controllers/filters-controller.js';
 
-import {render} from './utils.js';
+import FilmsModel from './models/films.js';
+import CommentsModel from './models/comments.js';
+
+import {render, getRandomInteger} from './utils.js';
 
 import {filmsData} from './mock/film.js';
+import {generateComments} from './mock/comment.js';
 import {FILTER_TYPES} from './const.js';
 
+const COMMENTS_LIMIT = 5;
 
-const filters = {
-  [FILTER_TYPES.ALL]: {
-    title: `All movies`,
-    count: null,
-  },
-  [FILTER_TYPES.WATCHLIST]: {
-    title: `Watchlist`,
-    count: null,
-  },
-  [FILTER_TYPES.HISTORY]: {
-    title: `History`,
-    count: null,
-  },
-  [FILTER_TYPES.FAVORITE]: {
-    title: `Favorite`,
-    count: null,
-  },
-};
-
-const updateFilters = (films) => {
-  films.forEach((film) => {
-    const {isWatchList, isFavorite, isWatched} = film;
-
-    if (isWatchList) {
-      filters[FILTER_TYPES.WATCHLIST].count++;
-    }
-
-    if (isFavorite) {
-      filters[FILTER_TYPES.FAVORITE].count++;
-    }
-
-    if (isWatched) {
-      filters[FILTER_TYPES.HISTORY].count++;
-    }
-
-  });
-};
-
-updateFilters(filmsData);
 
 const quantityOfFilms = filmsData.length;
 
-const user = {count: filters[FILTER_TYPES.HISTORY].count};
+const commentsModel = new CommentsModel();
+for (let i = 0; i < quantityOfFilms; i++) {
+  const comments = generateComments(getRandomInteger(0, COMMENTS_LIMIT));
+  commentsModel.setComments(comments, i);
+}
+
+
+const filmsModel = new FilmsModel();
+filmsModel.setFilms(filmsData);
+
 const header = document.querySelector(`.header`);
+const main = document.querySelector(`.main`);
+
+const filtersController = new FiltersController(main, filmsModel);
+filtersController.render();
+
+
+const user = {count: filtersController.getFilters()[FILTER_TYPES.HISTORY].count};
 render(header, new ProfileComponent(user));
 
-const main = document.querySelector(`.main`);
-render(main, new MenuComponent(filters));
-
-
-const pageController = new PageController(main);
-pageController.render(filmsData);
+const pageController = new PageController(main, filmsModel, commentsModel);
+pageController.render();
 
 
 const footer = document.querySelector(`.footer`);

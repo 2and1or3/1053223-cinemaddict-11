@@ -1,5 +1,5 @@
 import {getRandomArray, getRandomInteger, getRandomDate} from '../utils.js';
-import {generateComments} from './comment.js';
+// import {generateComments} from './comment.js';
 const POSTERS = [
   `./images/posters/made-for-each-other.png`,
   `./images/posters/popeye-meets-sinbad.png`,
@@ -27,14 +27,14 @@ const CARD_COUNT = 19;
 const MAX_RATING = 10;
 const MAX_AGE_LIMIT = 18;
 
-const COMMENTS_LIMIT = 5;
+// const COMMENTS_LIMIT = 5;
 
 const DURATION = {
   min: 60,
   max: 180,
 };
 
-const generateFilm = () => {
+const generateFilm = (index) => {
   const randomDate = getRandomDate();
 
   return {
@@ -53,10 +53,11 @@ const generateFilm = () => {
     genres: getRandomArray(GENRES),
     description: getRandomArray(DESCRIPTIONS).join(` `),
     ageLimit: getRandomInteger(0, MAX_AGE_LIMIT),
-    comments: generateComments(getRandomInteger(0, COMMENTS_LIMIT)),
+    // comments: generateComments(getRandomInteger(0, COMMENTS_LIMIT), index),
     isWatchList: Math.random() > 0.5,
     isFavorite: Math.random() > 0.5,
-    isWatched: Math.random() > 0.5
+    isWatched: Math.random() > 0.5,
+    id: index,
   };
 };
 
@@ -65,7 +66,7 @@ const generateFilms = (count) => {
   const cards = [];
 
   for (let i = 0; i < count; i++) {
-    cards.push(generateFilm());
+    cards.push(generateFilm(i));
   }
 
   return cards;
