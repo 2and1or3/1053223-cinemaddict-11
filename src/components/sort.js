@@ -28,10 +28,11 @@ class Sort extends AbstractComponent {
     return createSortTemplate();
   }
 
-  toggleActiveClass(evt) {
+  _toggleActiveClass(sortType) {
     const currentControl = this.getElement().querySelector(`.${ACTIVE_SORT_CLASS}`);
     currentControl.classList.remove(`${ACTIVE_SORT_CLASS}`);
-    evt.target.classList.add(`${ACTIVE_SORT_CLASS}`);
+    const targetControl = this.getElement().querySelector(`a[data-sort-type=${sortType}]`);
+    targetControl.classList.add(`${ACTIVE_SORT_CLASS}`);
   }
 
   getCurrentSort() {
@@ -41,12 +42,16 @@ class Sort extends AbstractComponent {
   setCurrentSort(evt) {
     const isLink = evt.target.tagName === `A`;
 
-
     if (isLink) {
-      this.toggleActiveClass(evt);
       const sortType = evt.target.dataset.sortType;
       this._currentSort = sortType;
+      this._toggleActiveClass(this._currentSort);
     }
+  }
+
+  resetCurrentSort() {
+    this._currentSort = SORT_TYPES.DEFAULT;
+    this._toggleActiveClass(this._currentSort);
   }
 
   setClickHandler(cb) {

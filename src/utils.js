@@ -73,9 +73,14 @@ const createElement = (template) => {
 const render = (target, component, method = RENDER_METHODS.APPEND) => {
 
   switch (method) {
+    case RENDER_METHODS.PREPEND:
+      target.prepend(component.getElement());
+      break;
+
     case RENDER_METHODS.APPEND:
       target.append(component.getElement());
       break;
+
     case RENDER_METHODS.AFTER:
       target.after(component.getElement());
       break;

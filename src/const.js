@@ -32,6 +32,7 @@ const ERRORS = {
 };
 
 const RENDER_METHODS = {
+  PREPEND: `prepend`,
   APPEND: `append`,
   AFTER: `after`,
 };

@@ -4,9 +4,9 @@ import {addListeners, yearCardFormat, durationFormat} from '../utils.js';
 const DESCRIPTION_LENGTH = 139;
 const DESCRIPTION_END = `…`;
 const CONTROL_ACTIVE_CLASS = `film-card__controls-item--active`;
-const createCardTemplate = function (film) {
+const createCardTemplate = function (film, commentsLenght) {
 
-  const {poster, title, rating, date, genres, description, comments, duration, isFavorite, isWatchList, isWatched} = film;
+  const {poster, title, rating, date, genres, description, duration, isFavorite, isWatchList, isWatched} = film;
 
   const year = yearCardFormat(date);
   const filmDuration = durationFormat(duration);
@@ -27,7 +27,7 @@ const createCardTemplate = function (film) {
       </p>
       <img src="${poster}" alt="" class="film-card__poster">
       <p class="film-card__description">${text}</p>
-      <a class="film-card__comments">${comments.length} comments</a>
+      <a class="film-card__comments">${commentsLenght} comments</a>
       <form class="film-card__controls">
         <button type="button" class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${isWatchList ? CONTROL_ACTIVE_CLASS : ``}">Add to watchlist</button>
         <button type="button" class="film-card__controls-item button film-card__controls-item--mark-as-watched ${isWatched ? CONTROL_ACTIVE_CLASS : ``}">Mark as watched</button>
@@ -38,13 +38,15 @@ const createCardTemplate = function (film) {
 };
 
 class Card extends AbstractComponent {
-  constructor(film) {
+  constructor(film, commentsLenght) {
     super();
     this._film = film;
+    this._commentsLenght = commentsLenght;
   }
 
   getTemplate() {
-    return createCardTemplate(this._film);
+
+    return createCardTemplate(this._film, this._commentsLenght);
   }
 
   getFilm() {

@@ -14,6 +14,7 @@ const generateComment = () => {
     emotion: EMOJIES[Math.round(Math.random() * (EMOJIES.length - 1))],
     author: NAMES[Math.round(Math.random() * (NAMES.length - 1))],
     date: randomDate,
+    // filmId: id,
   };
 };
 
