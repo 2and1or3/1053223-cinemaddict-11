@@ -12,7 +12,7 @@ const createFilmsList = function () {
 class FilmsList extends AbstractComponent {
   constructor() {
     super();
-    this._innerContainer = null;
+    this._innerContainer = this.getElement().querySelector(`.films-list__container`);
   }
 
   getTemplate() {
@@ -20,10 +20,6 @@ class FilmsList extends AbstractComponent {
   }
 
   getInnerContainer() {
-    if (!this._innerContainer) {
-      this._innerContainer = this.getElement().querySelector(`.films-list__container`);
-    }
-
     return this._innerContainer;
   }
 }

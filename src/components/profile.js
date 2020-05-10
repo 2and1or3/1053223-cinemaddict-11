@@ -1,30 +1,6 @@
 import AbstractComponent from './abstract-component.js';
 
-const USER_STATUSES = [
-  {
-    title: `Movie Buff`,
-    minStatusEdge: 21,
-  },
-  {
-    title: `Fan`,
-    minStatusEdge: 11,
-  },
-  {
-    title: `Novice`,
-    minStatusEdge: 1,
-  },
-  {
-    title: ``,
-    minStatusEdge: 0,
-  },
-];
-
-
-const getUserStatus = (watchedQuantity) => {
-  const userStatus = USER_STATUSES.find((status) => watchedQuantity >= status.minStatusEdge);
-
-  return userStatus.title;
-};
+import {getUserStatus} from '../utils.js';
 
 const createProfileTemplate = function (profileHistory) {
   const {count} = profileHistory;

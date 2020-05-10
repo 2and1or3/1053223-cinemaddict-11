@@ -13,7 +13,7 @@ class FilmsExtra extends AbstractComponent {
   constructor(title) {
     super();
     this._title = title;
-    this._innerContainer = null;
+    this._innerContainer = this.getElement().querySelector(`.films-list__container`);
   }
 
   getTemplate() {
@@ -21,10 +21,6 @@ class FilmsExtra extends AbstractComponent {
   }
 
   getInnerContainer() {
-    if (!this._innerContainer) {
-      this._innerContainer = this.getElement().querySelector(`.films-list__container`);
-    }
-
     return this._innerContainer;
   }
 }

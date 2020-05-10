@@ -37,4 +37,28 @@ const RENDER_METHODS = {
   AFTER: `after`,
 };
 
-export {MONTH_NAMES, DATE_YEAR, FILTER_TYPES, RENDER_METHODS, ERRORS};
+const SCREEN_IDS = {
+  STATISTIC: `statistic`,
+  CARDS: `cards`,
+};
+
+const USER_STATUSES = [
+  {
+    title: `Movie Buff`,
+    minStatusEdge: 21,
+  },
+  {
+    title: `Fan`,
+    minStatusEdge: 11,
+  },
+  {
+    title: `Novice`,
+    minStatusEdge: 1,
+  },
+  {
+    title: ``,
+    minStatusEdge: 0,
+  },
+];
+
+export {MONTH_NAMES, DATE_YEAR, FILTER_TYPES, RENDER_METHODS, ERRORS, SCREEN_IDS, USER_STATUSES};

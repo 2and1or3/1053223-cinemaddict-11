@@ -30,8 +30,9 @@ class FilterController {
     this._menuComponent = null;
 
     this._onDataChange = this._onDataChange.bind(this);
-
     this._onFilterChange = this._onFilterChange.bind(this);
+
+    this._screenChangeHandler = null;
   }
 
   _updateFilters() {
@@ -45,23 +46,32 @@ class FilterController {
   }
 
   _onDataChange() {
+    this._rerender();
+  }
+
+  _rerender() {
+    removeComponent(this._menuComponent);
     this.render();
+    this._menuComponent.setScreenChangeHandler(this._screenChangeHandler);
   }
 
   render() {
     this._updateFilters();
-    if (this._menuComponent) {
-      removeComponent(this._menuComponent);
-    }
 
     this._menuComponent = new MenuComponent(this._filters);
     render(this._container, this._menuComponent, RENDER_METHODS.PREPEND);
+
     this._menuComponent.setFilterHandler(this._onFilterChange);
     this._filmsModel.addDataChangeHandler(this._onDataChange);
   }
 
   getFilters() {
     return this._filters;
+  }
+
+  setScreenChangeHandler(cb) {
+    this._screenChangeHandler = cb;
+    this._menuComponent.setScreenChangeHandler(cb);
   }
 }
 

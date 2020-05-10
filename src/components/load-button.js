@@ -7,7 +7,7 @@ class LoadButton extends AbstractComponent {
     return createLoadButtonTemplate();
   }
 
-  setClickHandler(cb) {
+  setLoadButtonClickHandler(cb) {
     this.getElement().addEventListener(`click`, cb);
   }
 }

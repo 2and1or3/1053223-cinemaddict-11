@@ -24,38 +24,39 @@ class Sort extends AbstractComponent {
     this._currentSort = SORT_TYPES.DEFAULT;
   }
 
-  getTemplate() {
-    return createSortTemplate();
-  }
-
   _toggleActiveClass(sortType) {
     const currentControl = this.getElement().querySelector(`.${ACTIVE_SORT_CLASS}`);
     currentControl.classList.remove(`${ACTIVE_SORT_CLASS}`);
+
     const targetControl = this.getElement().querySelector(`a[data-sort-type=${sortType}]`);
     targetControl.classList.add(`${ACTIVE_SORT_CLASS}`);
+  }
+
+  getTemplate() {
+    return createSortTemplate();
   }
 
   getCurrentSort() {
     return this._currentSort;
   }
 
-  setCurrentSort(evt) {
-    const isLink = evt.target.tagName === `A`;
+  setSortClickHandler(cb) {
+    this.getElement().addEventListener(`click`, (evt) => {
+      const isLink = evt.target.tagName === `A`;
+      const isActive = this._currentSort === evt.target.dataset.sortType;
 
-    if (isLink) {
-      const sortType = evt.target.dataset.sortType;
-      this._currentSort = sortType;
-      this._toggleActiveClass(this._currentSort);
-    }
+      if (isLink && !isActive) {
+        const sortType = evt.target.dataset.sortType;
+        this._currentSort = sortType;
+        this._toggleActiveClass(this._currentSort);
+        cb(this._currentSort);
+      }
+    });
   }
 
   resetCurrentSort() {
     this._currentSort = SORT_TYPES.DEFAULT;
     this._toggleActiveClass(this._currentSort);
-  }
-
-  setClickHandler(cb) {
-    this.getElement().addEventListener(`click`, cb);
   }
 }
 

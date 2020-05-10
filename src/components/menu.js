@@ -1,6 +1,11 @@
 import AbstractComponent from './abstract-component.js';
 
+import {SCREEN_IDS} from '../const.js';
+
 const ACTIVE_CLASS = `main-navigation__item--active`;
+const STATISTIC_CLASS = `main-navigation__additional`;
+
+const isLink = (evt) => evt.target.tagName === `A`;
 
 const createFilterTemplate = (key, filter, isChecked) => {
   const {title, count} = filter;
@@ -26,7 +31,7 @@ const createMenuTemplate = function (filters) {
         <div class="main-navigation__items">
           ${filterMarkup}
         </div>
-        <a href="#stats" class="main-navigation__additional">Stats</a>
+        <a href="#stats" class="${STATISTIC_CLASS}">Stats</a>
       </nav>`
   );
 };
@@ -45,17 +50,31 @@ class Menu extends AbstractComponent {
     const container = this.getElement().querySelector(`.main-navigation__items`);
     container.addEventListener(`click`, (evt) => {
 
-      const isLink = evt.target.tagName === `A`;
       const isActive = evt.target.classList.contains(ACTIVE_CLASS);
 
-      if (isLink && !isActive) {
+      if (isLink(evt) && !isActive) {
         const oldActive = this.getElement().querySelector(`.${ACTIVE_CLASS}`);
         oldActive.classList.remove(ACTIVE_CLASS);
         evt.target.classList.add(ACTIVE_CLASS);
 
-
-        // console.log(evt.target.dataset.id);
         cb(evt.target.dataset.id);
+      }
+    });
+  }
+
+  setScreenChangeHandler(cb) {
+    const container = this.getElement();
+
+    container.addEventListener(`click`, (evt) => {
+
+      if (isLink(evt)) {
+        const isStatistic = evt.target.classList.contains(STATISTIC_CLASS);
+
+        if (isStatistic) {
+          cb(SCREEN_IDS.STATISTIC);
+        } else {
+          cb(SCREEN_IDS.CARDS);
+        }
       }
     });
   }
