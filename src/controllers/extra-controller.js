@@ -12,6 +12,7 @@ class ExtraController {
     this._extraCommentsModel = extraCommentsModel;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
+
     this._filmsExtraComponent = new FilmsExtraComponent(this._title);
   }
 
@@ -19,7 +20,11 @@ class ExtraController {
     render(this._container, this._filmsExtraComponent);
 
     films.forEach((film) => {
-      const cardController = new CardController(this._filmsExtraComponent.getInnerContainer(), this._onDataChange, this._onViewChange);
+      const cardController =
+      new CardController(this._filmsExtraComponent.getInnerContainer(),
+          this._onDataChange,
+          this._onViewChange);
+
       cardController.render(film, this._extraCommentsModel.getComments(film.id));
     });
   }

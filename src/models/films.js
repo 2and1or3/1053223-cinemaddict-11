@@ -40,7 +40,6 @@ class Films {
   }
 
   updateFilm(newFilm) {
-
     this._films[newFilm.id] = newFilm;
 
     this._callHandlers(this._dataChangeHandlers);

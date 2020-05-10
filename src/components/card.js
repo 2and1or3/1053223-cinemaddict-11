@@ -45,7 +45,6 @@ class Card extends AbstractComponent {
   }
 
   getTemplate() {
-
     return createCardTemplate(this._film, this._commentsLenght);
   }
 

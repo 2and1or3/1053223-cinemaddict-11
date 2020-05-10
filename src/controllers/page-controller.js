@@ -17,8 +17,8 @@ const EXTRA_TYPES = {
 };
 
 const SORT_FUNCTIONS = {
-  [SORT_TYPES.DATE]: (leftFilm, rightFilm) => leftFilm.date - rightFilm.date,
-  [SORT_TYPES.RATING]: (leftFilm, rightFilm) => leftFilm.rating - rightFilm.rating,
+  [SORT_TYPES.DATE]: (leftFilm, rightFilm) => rightFilm.date - leftFilm.date,
+  [SORT_TYPES.RATING]: (leftFilm, rightFilm) => rightFilm.rating - leftFilm.rating,
 };
 
 
@@ -29,6 +29,7 @@ class PageController {
     this._commentsModel = commentsModel;
     this._visibleCards = 0;
     this._visibleCardControllers = [];
+
     this._contentContainerComponent = new ContentContainerComponent();
     this._noFilmsComponent = new NoFilmsComponent();
     this._filmsListComponent = new FilmsListComponent();
@@ -40,6 +41,8 @@ class PageController {
     this._onViewChange = this._onViewChange.bind(this);
     this._onCommentDelete = this._onCommentDelete.bind(this);
     this._onCommentAdd = this._onCommentAdd.bind(this);
+    this._loadButtonHandler = this._loadButtonHandler.bind(this);
+    this._sortClickHandler = this._sortClickHandler.bind(this);
   }
 
   _loadMore(begin, end, currentFilms) {
@@ -50,8 +53,13 @@ class PageController {
       currentFilms
         .slice(begin, end)
         .map((film) => {
+          const cardController =
+          new CardController(this._filmsListComponent.getInnerContainer(),
+              this._onDataChange,
+              this._onViewChange,
+              this._onCommentDelete,
+              this._onCommentAdd);
 
-          const cardController = new CardController(this._filmsListComponent.getInnerContainer(), this._onDataChange, this._onViewChange, this._onCommentDelete, this._onCommentAdd);
           cardController.render(film, this._commentsModel.getComments(film.id));
           return cardController;
         });
@@ -77,16 +85,8 @@ class PageController {
     }
   }
 
-  _sortClickHandler(evt) {
-    const oldSortType = this._sortComponent.getCurrentSort();
-    this._sortComponent.setCurrentSort(evt);
-    const newSortType = this._sortComponent.getCurrentSort();
-
-    const isChanged = oldSortType !== newSortType;
-
-    if (isChanged) {
-      this._repeatRender(newSortType);
-    }
+  _sortClickHandler(newSortType) {
+    this._repeatRender(newSortType);
   }
 
   _getSortedFilms(sortType) {
@@ -112,10 +112,11 @@ class PageController {
   }
 
   _updateCard(film) {
-    const controllerIndex = this._visibleCardControllers.findIndex((controller) => controller.getId() === film.id);
-    this._visibleCardControllers[controllerIndex].updateRender(film, this._commentsModel.getComments(film.id));
-  }
+    const targetController = this._visibleCardControllers
+                             .find((controller) => controller.getId() === film.id);
 
+    targetController.updateRender(film, this._commentsModel.getComments(film.id));
+  }
 
   _onDataChange(newFilm) {
     this._filmsModel.updateFilm(newFilm);
@@ -136,12 +137,12 @@ class PageController {
   }
 
   _onViewChange(evt) {
-    this._visibleCardControllers.forEach((controller) => controller.setDefaultView(evt));
+    this._visibleCardControllers
+    .forEach((controller) => controller.setDefaultView(evt));
   }
 
   _onFilterChange() {
-    this._repeatRender(SORT_TYPES.DEFAULT);
-    this._sortComponent.resetCurrentSort();
+    this.resetCurrentSort();
   }
 
   _renderExtra() {
@@ -158,7 +159,13 @@ class PageController {
 
     extraFilmsTypes.forEach((filmsType) => {
       const extraFilms = extraFilmsData[filmsType];
-      const extraController = new ExtraController(this._contentContainerComponent.getElement(), filmsType, extraCommentsModel, this._onDataChange, this._onViewChange);
+      const extraController =
+      new ExtraController(this._contentContainerComponent.getElement(),
+          filmsType,
+          extraCommentsModel,
+          this._onDataChange,
+          this._onViewChange);
+
       extraController.render(extraFilms);
     });
   }
@@ -169,7 +176,7 @@ class PageController {
 
     if (isMoreThanStep) {
       render(this._filmsListComponent.getElement(), this._loadButtonComponent);
-      this._loadButtonComponent.setClickHandler(this._loadButtonHandler.bind(this));
+      this._loadButtonComponent.setLoadButtonClickHandler(this._loadButtonHandler);
     }
   }
 
@@ -178,7 +185,7 @@ class PageController {
     const isEmptyData = !films.length;
 
     render(this._container, this._sortComponent);
-    this._sortComponent.setClickHandler(this._sortClickHandler.bind(this));
+    this._sortComponent.setSortClickHandler(this._sortClickHandler);
 
     render(this._container, this._contentContainerComponent);
 
@@ -194,6 +201,21 @@ class PageController {
 
       this._renderExtra();
     }
+  }
+
+  show() {
+    this._contentContainerComponent.show();
+    this._sortComponent.show();
+  }
+
+  hide() {
+    this._contentContainerComponent.hide();
+    this._sortComponent.hide();
+  }
+
+  resetCurrentSort() {
+    this._repeatRender(SORT_TYPES.DEFAULT);
+    this._sortComponent.resetCurrentSort();
   }
 }
 

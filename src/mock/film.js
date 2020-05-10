@@ -1,5 +1,5 @@
 import {getRandomArray, getRandomInteger, getRandomDate} from '../utils.js';
-// import {generateComments} from './comment.js';
+
 const POSTERS = [
   `./images/posters/made-for-each-other.png`,
   `./images/posters/popeye-meets-sinbad.png`,
@@ -14,7 +14,7 @@ const DIRECTORS = [`Steven Spielberg`, `Alfred Hitchcock`, `Martin Scorsese`];
 const CASTS = [`Charles Chaplin`, `Marlon Brando`, `Jack Nicholson`, `Daniel Day-Lewis`];
 const SCENARISTS = [`Robert Towne`, `Quentin Tarantino`, `Francis Ford Coppola`];
 const COUNTRIES = [`Russia`, `USA`, `China`, `Germany`, `France`];
-const GENRES = [`Fantasy`, `Horror`, `Western`, `Romance`, `Thriller`, `Mystery`, `Detective`];
+const GENRES = [`Fantasy`, `TV Series`, `Comedy`, `Animation`, `Sci-Fi`];
 const DESCRIPTIONS = [
   `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
   `Cras aliquet varius magna, non porta ligula feugiat eget.`,
@@ -27,7 +27,6 @@ const CARD_COUNT = 19;
 const MAX_RATING = 10;
 const MAX_AGE_LIMIT = 18;
 
-// const COMMENTS_LIMIT = 5;
 
 const DURATION = {
   min: 60,

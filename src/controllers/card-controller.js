@@ -4,6 +4,12 @@ import DetailsComponent from '../components/details-popup.js';
 import {render, isEscPress, removeComponent} from '../utils.js';
 import {RENDER_METHODS} from '../const.js';
 
+const FILM_PROPERTIES = {
+  IS_WATCHLIST: `isWatchList`,
+  IS_FAVORITE: `isFavorite`,
+  IS_WATCHED: `isWatched`,
+};
+
 
 class CardController {
   constructor(container, onDataChange, onViewChange, onCommentDelete, onCommentAdd) {
@@ -12,9 +18,13 @@ class CardController {
     this._onViewChange = onViewChange;
     this._onCommentDelete = onCommentDelete;
     this._onCommentAdd = onCommentAdd;
+
     this._cardComponent = null;
     this._detailsComponent = null;
+
     this._onEscPress = this._onEscPress.bind(this);
+    this._closePopup = this._closePopup.bind(this);
+    this._openPopup = this._openPopup.bind(this);
   }
 
   _onEscPress(evt) {
@@ -26,8 +36,10 @@ class CardController {
   _openPopup(evt) {
     evt.preventDefault();
     this._onViewChange(evt);
+
     this._detailsComponent.show();
-    this._detailsComponent.setCloseClickHandler(this._closePopup.bind(this));
+    this._detailsComponent.setCloseClickHandler(this._closePopup);
+
     document.addEventListener(`keydown`, this._onEscPress);
   }
 
@@ -37,42 +49,22 @@ class CardController {
     document.removeEventListener(`keydown`, this._onEscPress);
   }
 
-  _changeWatchList(film) {
-    const changedFilm = {
-      isWatchList: !film.isWatchList,
-    };
-
-    const newFilm = Object.assign({}, film, changedFilm);
-    this._onDataChange(newFilm);
-  }
-
-  _changeHistoryList(film) {
-    const changedFilm = {
-      isWatched: !film.isWatched,
-    };
-
-    const newFilm = Object.assign({}, film, changedFilm);
-    this._onDataChange(newFilm);
-  }
-
-  _changeFavoriteList(film) {
-    const changedFilm = {
-      isFavorite: !film.isFavorite,
-    };
+  _changeFilmState(property, film) {
+    const changedFilm = {[property]: !film[property]};
 
     const newFilm = Object.assign({}, film, changedFilm);
     this._onDataChange(newFilm);
   }
 
   _recoveryListeners(film) {
-    this._cardComponent.setOpenClickHandlers(this._openPopup.bind(this));
-    this._cardComponent.setWatchListClickHandler(() => this._changeWatchList(film));
-    this._cardComponent.setHistoryClickHandler(() => this._changeHistoryList(film));
-    this._cardComponent.setFavoriteClickHandler(() => this._changeFavoriteList(film));
+    this._cardComponent.setOpenClickHandlers(this._openPopup);
+    this._cardComponent.setWatchListClickHandler(() => this._changeFilmState(FILM_PROPERTIES.IS_WATCHLIST, film));
+    this._cardComponent.setHistoryClickHandler(() => this._changeFilmState(FILM_PROPERTIES.IS_WATCHED, film));
+    this._cardComponent.setFavoriteClickHandler(() => this._changeFilmState(FILM_PROPERTIES.IS_FAVORITE, film));
 
-    this._detailsComponent.setWatchListClickHandler(() => this._changeWatchList(film));
-    this._detailsComponent.setHistoryClickHandler(() => this._changeHistoryList(film));
-    this._detailsComponent.setFavoriteClickHandler(() => this._changeFavoriteList(film));
+    this._detailsComponent.setWatchListClickHandler(() => this._changeFilmState(FILM_PROPERTIES.IS_WATCHLIST, film));
+    this._detailsComponent.setHistoryClickHandler(() => this._changeFilmState(FILM_PROPERTIES.IS_WATCHED, film));
+    this._detailsComponent.setFavoriteClickHandler(() => this._changeFilmState(FILM_PROPERTIES.IS_FAVORITE, film));
 
     this._detailsComponent.setDeleteCommentsHandler(this._onCommentDelete);
     this._detailsComponent.setAddCommentHandler(this._onCommentAdd);
@@ -93,14 +85,16 @@ class CardController {
     removeComponent(this._detailsComponent);
     const newCardComponent = new CardComponent(film, comments.length);
     this._detailsComponent = new DetailsComponent(film, comments);
+
     render(this._cardComponent.getElement(), newCardComponent, RENDER_METHODS.AFTER);
     removeComponent(this._cardComponent);
+
     this._cardComponent = newCardComponent;
     this._recoveryListeners(film);
 
     if (isOpened) {
       this._detailsComponent.show();
-      this._detailsComponent.setCloseClickHandler(this._closePopup.bind(this));
+      this._detailsComponent.setCloseClickHandler(this._closePopup);
     }
   }
 

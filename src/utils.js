@@ -1,4 +1,4 @@
-import {MONTH_NAMES, DATE_YEAR, RENDER_METHODS} from './const.js';
+import {MONTH_NAMES, DATE_YEAR, RENDER_METHODS, USER_STATUSES} from './const.js';
 
 import moment from "moment";
 
@@ -96,6 +96,14 @@ const addListeners = (cb, ...controls) => {
   controls.forEach((control) => control.addEventListener(`click`, cb));
 };
 
+const getUserStatus = (watchedQuantity) => {
+  const userStatus = USER_STATUSES.find((status) => watchedQuantity >= status.minStatusEdge);
+
+  return userStatus.title;
+};
+
+const parsePrefixId = (prefix, id) => id.slice(prefix.length);
+
 export {
   getRandomArray,
   getRandomInteger,
@@ -109,4 +117,6 @@ export {
   addListeners,
   isEscPress,
   yearCardFormat,
+  getUserStatus,
+  parsePrefixId,
 };

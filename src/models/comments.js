@@ -12,7 +12,6 @@ class Comments {
   }
 
   getComments(id) {
-
     return this._comments[id];
   }
 
@@ -35,11 +34,6 @@ class Comments {
   addCommentsChangeHandler(cb) {
     this._commentsChangeHandlers.push(cb);
   }
-
-
-  // updateFilm(id) {
-  //   // updating current film by id
-  // }
 }
 
 export default Comments;
