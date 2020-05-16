@@ -3,18 +3,19 @@ import SortComponent from '../components/sort.js';
 import ContentContainerComponent from '../components/content-container.js';
 import FilmsListComponent from '../components/films-list.js';
 import NoFilmsComponent from '../components/films-list.js';
+import LoadingComponent from '../components/loading.js';
 
 import CardController from './card-controller.js';
-import ExtraController from './extra-controller.js';
+// import ExtraController from './extra-controller.js';
 
-import {render, removeComponent} from '../utils.js';
+import {render, removeComponent, replace} from '../utils.js';
 import {SORT_TYPES} from '../components/sort.js';
 
 const CARDS_STEP = 5;
-const EXTRA_TYPES = {
-  TOP: `Top rated`,
-  MOST: `Most commented`,
-};
+// const EXTRA_TYPES = {
+//   TOP: `Top rated`,
+//   MOST: `Most commented`,
+// };
 
 const SORT_FUNCTIONS = {
   [SORT_TYPES.DATE]: (leftFilm, rightFilm) => rightFilm.date - leftFilm.date,
@@ -23,8 +24,9 @@ const SORT_FUNCTIONS = {
 
 
 class PageController {
-  constructor(container, filmsModel, commentsModel) {
+  constructor(container, api, filmsModel, commentsModel) {
     this._container = container;
+    this._api = api;
     this._filmsModel = filmsModel;
     this._commentsModel = commentsModel;
     this._visibleCards = 0;
@@ -35,6 +37,7 @@ class PageController {
     this._filmsListComponent = new FilmsListComponent();
     this._loadButtonComponent = new LoadButtonComponent();
     this._sortComponent = new SortComponent();
+    this._loadingComponent = new LoadingComponent();
 
     this._onFilterChange = this._onFilterChange.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
@@ -43,6 +46,16 @@ class PageController {
     this._onCommentAdd = this._onCommentAdd.bind(this);
     this._loadButtonHandler = this._loadButtonHandler.bind(this);
     this._sortClickHandler = this._sortClickHandler.bind(this);
+
+    this._renderLoading();
+  }
+
+  _renderLoading() {
+    render(this._container, this._sortComponent);
+    this._sortComponent.setSortClickHandler(this._sortClickHandler);
+
+    render(this._container, this._contentContainerComponent);
+    render(this._contentContainerComponent.getElement(), this._loadingComponent);
   }
 
   _loadMore(begin, end, currentFilms) {
@@ -119,9 +132,16 @@ class PageController {
   }
 
   _onDataChange(newFilm) {
-    this._filmsModel.updateFilm(newFilm);
 
-    this._updateCard(newFilm);
+    this._api.updateFilm(newFilm)
+    .then((film) => {
+      this._filmsModel.updateFilm(film);
+
+      this._updateCard(film);
+    })
+    .catch((err) => {
+      throw new Error(err);
+    });
   }
 
   _onCommentDelete(film, commentIndex) {
@@ -145,30 +165,30 @@ class PageController {
     this.resetCurrentSort();
   }
 
-  _renderExtra() {
-    const films = this._filmsModel.getAllFilms();
-
-    const extraFilmsData = {
-      [EXTRA_TYPES.TOP]: [films[0], films[1]],
-      [EXTRA_TYPES.MOST]: [films[0], films[1]],
-    };
-
-    const extraCommentsModel = this._commentsModel;
-
-    const extraFilmsTypes = Object.keys(extraFilmsData);
-
-    extraFilmsTypes.forEach((filmsType) => {
-      const extraFilms = extraFilmsData[filmsType];
-      const extraController =
-      new ExtraController(this._contentContainerComponent.getElement(),
-          filmsType,
-          extraCommentsModel,
-          this._onDataChange,
-          this._onViewChange);
-
-      extraController.render(extraFilms);
-    });
-  }
+  // _renderExtra() {
+  //   const films = this._filmsModel.getAllFilms();
+  //
+  //   const extraFilmsData = {
+  //     [EXTRA_TYPES.TOP]: [films[0], films[1]],
+  //     [EXTRA_TYPES.MOST]: [films[0], films[1]],
+  //   };
+  //
+  //   const extraCommentsModel = this._commentsModel;
+  //
+  //   const extraFilmsTypes = Object.keys(extraFilmsData);
+  //
+  //   extraFilmsTypes.forEach((filmsType) => {
+  //     const extraFilms = extraFilmsData[filmsType];
+  //     const extraController =
+  //     new ExtraController(this._contentContainerComponent.getElement(),
+  //         filmsType,
+  //         extraCommentsModel,
+  //         this._onDataChange,
+  //         this._onViewChange);
+  //
+  //     extraController.render(extraFilms);
+  //   });
+  // }
 
   _renderLoadButton() {
     const currentFilms = this._filmsModel.getFilms();
@@ -184,22 +204,17 @@ class PageController {
     const films = this._filmsModel.getFilms();
     const isEmptyData = !films.length;
 
-    render(this._container, this._sortComponent);
-    this._sortComponent.setSortClickHandler(this._sortClickHandler);
-
-    render(this._container, this._contentContainerComponent);
-
     if (isEmptyData) {
       render(this._contentContainerComponent.getElement(), this._noFilmsComponent);
     } else {
-      render(this._contentContainerComponent.getElement(), this._filmsListComponent);
+      replace(this._filmsListComponent, this._loadingComponent);
       this._loadMore(this._visibleCards, CARDS_STEP, films);
 
       this._renderLoadButton();
 
       this._filmsModel.addFilterChangeHandler(this._onFilterChange);
 
-      this._renderExtra();
+      // this._renderExtra();
     }
   }
 

@@ -71,7 +71,8 @@ class CardController {
   }
 
   render(film, comments) {
-    this._cardComponent = new CardComponent(film, comments.length);
+
+    this._cardComponent = new CardComponent(film);
     this._detailsComponent = new DetailsComponent(film, comments);
 
     render(this._container, this._cardComponent);
@@ -83,7 +84,7 @@ class CardController {
     const isOpened = document.querySelector(`.film-details`);
 
     removeComponent(this._detailsComponent);
-    const newCardComponent = new CardComponent(film, comments.length);
+    const newCardComponent = new CardComponent(film);
     this._detailsComponent = new DetailsComponent(film, comments);
 
     render(this._cardComponent.getElement(), newCardComponent, RENDER_METHODS.AFTER);
