@@ -18,6 +18,12 @@ const GENRES_SET = {
   FANTASY: `Fantasy`,
   COMEDY: `Comedy`,
   TV_SERIES: `TV Series`,
+  DRAMA: `Drama`,
+  ACTION: `Action`,
+  THRILLER: `Thriller`,
+  FAMILY: `Family`,
+  ADVENTURE: `Adventure`,
+  HORROR: `Horror`,
 };
 
 const HOUR_DURATION = 60;

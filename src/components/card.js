@@ -38,14 +38,13 @@ const createCardTemplate = function (film, commentsLenght) {
 };
 
 class Card extends AbstractComponent {
-  constructor(film, commentsLenght) {
+  constructor(film) {
     super();
     this._film = film;
-    this._commentsLenght = commentsLenght;
   }
 
   getTemplate() {
-    return createCardTemplate(this._film, this._commentsLenght);
+    return createCardTemplate(this._film, this._film.comments.length);
   }
 
   getFilm() {
