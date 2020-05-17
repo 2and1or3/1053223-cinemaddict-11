@@ -1,6 +1,6 @@
-import AbstractComponent from './abstract-component.js';
+import AbstractSmartComponent from './abstract-smart-component.js';
 
-import {render, getUserStatus, parsePrefixId, removeComponent} from '../utils.js';
+import {render, getUserStatus, parsePrefixId} from '../utils.js';
 
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -15,9 +15,7 @@ const STATISTIC_FIELDS = {
 const GENRES_SET = {
   SCIFI: `Sci-Fi`,
   ANIMATION: `Animation`,
-  FANTASY: `Fantasy`,
   COMEDY: `Comedy`,
-  TV_SERIES: `TV Series`,
   DRAMA: `Drama`,
   ACTION: `Action`,
   THRILLER: `Thriller`,
@@ -28,8 +26,9 @@ const GENRES_SET = {
 
 const HOUR_DURATION = 60;
 
-const PERIOD_PREFIX = `statistic-`;
+const BAR_HEIGHT = 50;
 
+const PERIOD_PREFIX = `statistic-`;
 
 const PERIOD_IDS = {
   ALL_TIME: `all-time`,
@@ -46,7 +45,7 @@ const PERIODS = {
   },
   [PERIOD_IDS.TODAY]: {
     title: `Today`,
-    range: 0,
+    range: 1,
   },
   [PERIOD_IDS.WEEK]: {
     title: `Week`,
@@ -124,7 +123,7 @@ const createStatisticTemplate = (statistic, currentPeriod) => {
   );
 };
 
-class Statistic extends AbstractComponent {
+class Statistic extends AbstractSmartComponent {
   constructor(container, filmsModel) {
     super();
     this._container = container;
@@ -148,6 +147,14 @@ class Statistic extends AbstractComponent {
 
       this._genresCounts.push(count);
     });
+
+    this._onDataChange = this._onDataChange.bind(this);
+    this._filmsModel.addDataChangeHandler(this._onDataChange);
+  }
+
+  _onDataChange() {
+    this.render();
+    this.hide();
   }
 
   _getWatched(films) {
@@ -180,7 +187,6 @@ class Statistic extends AbstractComponent {
   }
 
   _drawChart() {
-    const BAR_HEIGHT = 50;
     const statisticCtx = document.querySelector(`.statistic__chart`);
 
     const labels = this._genresCounts.map((count) => count.title);
@@ -249,9 +255,14 @@ class Statistic extends AbstractComponent {
   }
 
   _isInPeriod(date) {
-    const beginPeriod = moment().add(-PERIODS[this._currentPeriod].range, `days`).format();
+    if (this._currentPeriod === PERIOD_IDS.ALL_TIME) {
+      return true;
+    }
 
-    return date >= beginPeriod;
+    const beginPeriod = moment().add(-PERIODS[this._currentPeriod].range, `days`);
+
+    const isInPeriod = date >= beginPeriod;
+    return isInPeriod;
   }
 
   _periodChangeHandler() {
@@ -274,24 +285,22 @@ class Statistic extends AbstractComponent {
   }
 
   render() {
-    // films = allfilms.filter((film) => this._isInPeriod(film.dateProperty));
-
     const films = this._filmsModel.getAllFilms();
+    const filteredFilms = films.filter((film) => this._isInPeriod(new Date(film.watchDate)));
 
-    this._statistic[STATISTIC_FIELDS.ALL_WATCHED] = this._getWatched(films);
-    this._statistic[STATISTIC_FIELDS.ALL_DURATION] = this._getAllDuration(films);
+    this._statistic[STATISTIC_FIELDS.ALL_WATCHED] = this._getWatched(filteredFilms);
+    this._statistic[STATISTIC_FIELDS.ALL_DURATION] = this._getAllDuration(filteredFilms);
     this._calculateGenres(this._statistic[STATISTIC_FIELDS.ALL_WATCHED]);
-    this._statistic[STATISTIC_FIELDS.FAVORITE_GENTER] = this._genresCounts[0].title;
+    this._statistic[STATISTIC_FIELDS.FAVORITE_GENTER] = this._genresCounts[0].count ? this._genresCounts[0].title : ``;
 
-    render(this._container, this);
+    if (!this._element) {
+      render(this._container, this);
+    } else {
+      this.rerender();
+    }
 
     this._drawChart();
     this._periodChangeHandler();
-  }
-
-  rerender() {
-    removeComponent(this);
-    this.render();
   }
 }
 

@@ -37,7 +37,6 @@ class API {
 
     return fetch(resultUrl, options)
             .then(checkStatus);
-
   }
 
   getFilms() {
@@ -56,7 +55,6 @@ class API {
     headers.append(`Content-Type`, `application/json`);
 
     const url = MOVIES_POSTFIX + `/` + newFilm.id;
-
 
     newFilm = FilmAdapter.toRAWFilm(newFilm);
     const body = JSON.stringify(newFilm);
@@ -80,7 +78,42 @@ class API {
             .catch((err) => {
               throw new Error(err);
             });
+  }
 
+  addComment(filmId, newComment) {
+    const headers = new Headers();
+    headers.append(`Content-Type`, `application/json`);
+
+    newComment = FilmAdapter.toRAWComment(newComment);
+    const body = JSON.stringify(newComment);
+
+    const url = COMMENTS_POSTFIX + `/` + filmId;
+
+    return this._getRequest(headers, url, METHODS.POST, body)
+            .then((response) => response.json())
+            .then((filmAndComments) => {
+              const localObj = {
+                movie: FilmAdapter.parseFilm(filmAndComments.movie),
+                comments: FilmAdapter.parseComments(filmAndComments.comments),
+              };
+
+              return localObj;
+            })
+            .catch((err) => {
+              throw new Error(err);
+            });
+  }
+
+  deleteComment(commentId) {
+    const headers = new Headers();
+
+    const url = COMMENTS_POSTFIX + `/` + commentId;
+
+    return this._getRequest(headers, url, METHODS.DELETE)
+            .then((response) => response.ok)
+            .catch((err) => {
+              throw new Error(err);
+            });
   }
 }
 

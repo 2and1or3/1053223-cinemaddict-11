@@ -1,6 +1,7 @@
-import AbstractComponent from './abstract-component.js';
+import AbstractSmartComponent from './abstract-smart-component.js';
 
-import {getUserStatus} from '../utils.js';
+import {getUserStatus, render} from '../utils.js';
+import {FILTER_TYPES} from '../const.js';
 
 const createProfileTemplate = function (profileHistory) {
   const {count} = profileHistory;
@@ -14,14 +15,30 @@ const createProfileTemplate = function (profileHistory) {
   );
 };
 
-class Profile extends AbstractComponent {
-  constructor(user) {
+class Profile extends AbstractSmartComponent {
+  constructor(container, filmsModel) {
     super();
-    this._user = user;
+    this._container = container;
+    this._filmsModel = filmsModel;
+    this._user = {count: 0};
+
+    this.render = this.render.bind(this);
+
+    this._filmsModel.addDataChangeHandler(this.render);
   }
 
   getTemplate() {
     return createProfileTemplate(this._user);
+  }
+
+  render() {
+    this._user.count = this._filmsModel.getFilms(FILTER_TYPES.HISTORY).length;
+
+    if (!this._element) {
+      render(this._container, this);
+    } else {
+      this.rerender();
+    }
   }
 }
 

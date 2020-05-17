@@ -2,26 +2,33 @@ import LoadButtonComponent from '../components/load-button.js';
 import SortComponent from '../components/sort.js';
 import ContentContainerComponent from '../components/content-container.js';
 import FilmsListComponent from '../components/films-list.js';
-import NoFilmsComponent from '../components/films-list.js';
+import NoFilmsComponent from '../components/no-films.js';
 import LoadingComponent from '../components/loading.js';
+import FilmsExtraComponent from '../components/films-extra.js';
 
 import CardController from './card-controller.js';
-// import ExtraController from './extra-controller.js';
 
 import {render, removeComponent, replace} from '../utils.js';
 import {SORT_TYPES} from '../components/sort.js';
 
 const CARDS_STEP = 5;
-// const EXTRA_TYPES = {
-//   TOP: `Top rated`,
-//   MOST: `Most commented`,
-// };
-
-const SORT_FUNCTIONS = {
-  [SORT_TYPES.DATE]: (leftFilm, rightFilm) => rightFilm.date - leftFilm.date,
-  [SORT_TYPES.RATING]: (leftFilm, rightFilm) => rightFilm.rating - leftFilm.rating,
+const EXTRA_TYPES = {
+  TOP: `Top rated`,
+  MOST: `Most commented`,
 };
 
+const SORT_FUNCTIONS = {
+  [SORT_TYPES.DATE]: (leftFilm, rightFilm) => new Date(rightFilm.date) - new Date(leftFilm.date),
+  [SORT_TYPES.RATING]: (leftFilm, rightFilm) => rightFilm.rating - leftFilm.rating,
+  [SORT_TYPES.COMMENT]: (leftFilm, rightFilm) => rightFilm.comments.length - leftFilm.comments.length,
+};
+
+const COMMENT_FORM_ACTIVE = {
+  ON: false,
+  OFF: true,
+};
+
+const QUANTITY_EXTRA_CARDS = 2;
 
 class PageController {
   constructor(container, api, filmsModel, commentsModel) {
@@ -38,6 +45,8 @@ class PageController {
     this._loadButtonComponent = new LoadButtonComponent();
     this._sortComponent = new SortComponent();
     this._loadingComponent = new LoadingComponent();
+    this._filmsExtraComponentRate = null;
+    this._filmsExtraComponentComment = null;
 
     this._onFilterChange = this._onFilterChange.bind(this);
     this._onDataChange = this._onDataChange.bind(this);
@@ -58,16 +67,12 @@ class PageController {
     render(this._contentContainerComponent.getElement(), this._loadingComponent);
   }
 
-  _loadMore(begin, end, currentFilms) {
-    const difference = end - begin;
-    this._visibleCards += difference;
-
-    const newCardControllers =
-      currentFilms
-        .slice(begin, end)
+  _getCardControllers(container, films) {
+    const controllers =
+      films
         .map((film) => {
           const cardController =
-          new CardController(this._filmsListComponent.getInnerContainer(),
+          new CardController(container,
               this._onDataChange,
               this._onViewChange,
               this._onCommentDelete,
@@ -76,6 +81,18 @@ class PageController {
           cardController.render(film, this._commentsModel.getComments(film.id));
           return cardController;
         });
+
+    return controllers;
+  }
+
+  _loadMore(begin, end, currentFilms) {
+    const difference = end - begin;
+    this._visibleCards += difference;
+
+    const container = this._filmsListComponent.getInnerContainer();
+    currentFilms = currentFilms.slice(begin, end);
+
+    const newCardControllers = this._getCardControllers(container, currentFilms);
 
     this._visibleCardControllers = this._visibleCardControllers.concat(newCardControllers);
   }
@@ -124,20 +141,16 @@ class PageController {
     this._visibleCardControllers = [];
   }
 
-  _updateCard(film) {
-    const targetController = this._visibleCardControllers
-                             .find((controller) => controller.getId() === film.id);
-
-    targetController.updateRender(film, this._commentsModel.getComments(film.id));
-  }
-
   _onDataChange(newFilm) {
+    const targetController = this._visibleCardControllers
+                               .find((controller) => controller.getId() === newFilm.id);
 
     this._api.updateFilm(newFilm)
     .then((film) => {
       this._filmsModel.updateFilm(film);
 
-      this._updateCard(film);
+      targetController.updateRender(film, this._commentsModel.getComments(film.id));
+      this._renderExtra();
     })
     .catch((err) => {
       throw new Error(err);
@@ -145,15 +158,46 @@ class PageController {
   }
 
   _onCommentDelete(film, commentIndex) {
-    this._commentsModel.deleteComment(film.id, commentIndex);
+    const commentId = film.comments[commentIndex];
+    const targetController = this._visibleCardControllers
+                             .find((controller) => controller.getId() === film.id);
 
-    this._updateCard(film);
+    setTimeout(() => {
+      this._api.deleteComment(commentId)
+      .then(() => {
+        this._commentsModel.deleteComment(film.id, commentIndex);
+
+
+        film.comments.splice(commentIndex, 1);
+
+        targetController.updateRender(film, this._commentsModel.getComments(film.id));
+        this._renderExtra();
+      })
+      .catch(() => {
+        targetController.shakeComment(commentIndex);
+      });
+    }, 2000);
   }
 
   _onCommentAdd(film, newComment) {
-    this._commentsModel.addComment(film.id, newComment);
+    const targetController = this._visibleCardControllers
+                             .find((controller) => controller.getId() === film.id);
 
-    this._updateCard(film);
+    targetController.toggleCommentForm(COMMENT_FORM_ACTIVE.OFF);
+
+    setTimeout(() => {
+      this._api.addComment(film.id, newComment)
+      .then((localObj) => {
+        this._filmsModel.updateFilm(localObj.movie);
+        this._commentsModel.setComments(localObj.comments, film.id);
+
+        targetController.updateRender(localObj.movie, this._commentsModel.getComments(film.id));
+        this._renderExtra();
+      })
+      .catch(() => {
+        targetController.toggleCommentForm(COMMENT_FORM_ACTIVE.ON);
+      });
+    }, 2000);
   }
 
   _onViewChange(evt) {
@@ -165,30 +209,30 @@ class PageController {
     this.resetCurrentSort();
   }
 
-  // _renderExtra() {
-  //   const films = this._filmsModel.getAllFilms();
-  //
-  //   const extraFilmsData = {
-  //     [EXTRA_TYPES.TOP]: [films[0], films[1]],
-  //     [EXTRA_TYPES.MOST]: [films[0], films[1]],
-  //   };
-  //
-  //   const extraCommentsModel = this._commentsModel;
-  //
-  //   const extraFilmsTypes = Object.keys(extraFilmsData);
-  //
-  //   extraFilmsTypes.forEach((filmsType) => {
-  //     const extraFilms = extraFilmsData[filmsType];
-  //     const extraController =
-  //     new ExtraController(this._contentContainerComponent.getElement(),
-  //         filmsType,
-  //         extraCommentsModel,
-  //         this._onDataChange,
-  //         this._onViewChange);
-  //
-  //     extraController.render(extraFilms);
-  //   });
-  // }
+  _renderExtra() {
+    if (!(this._filmsExtraComponentRate || this._filmsExtraComponentComment)) {
+      this._filmsExtraComponentRate = new FilmsExtraComponent(EXTRA_TYPES.TOP);
+      this._filmsExtraComponentComment = new FilmsExtraComponent(EXTRA_TYPES.MOST);
+
+      render(this._contentContainerComponent.getElement(), this._filmsExtraComponentRate);
+      render(this._contentContainerComponent.getElement(), this._filmsExtraComponentComment);
+    } else {
+      this._filmsExtraComponentRate.getInnerContainer().innerHTML = ``;
+      this._filmsExtraComponentComment.getInnerContainer().innerHTML = ``;
+    }
+
+    let topRateFilms = this._filmsModel.getAllFilms().slice();
+    let topCommentFilms = topRateFilms.slice();
+
+    topRateFilms.sort(SORT_FUNCTIONS[SORT_TYPES.RATING]);
+    topCommentFilms.sort(SORT_FUNCTIONS[SORT_TYPES.COMMENT]);
+
+    topRateFilms = topRateFilms.slice(0, QUANTITY_EXTRA_CARDS);
+    topCommentFilms = topCommentFilms.slice(0, QUANTITY_EXTRA_CARDS);
+
+    this._getCardControllers(this._filmsExtraComponentRate.getInnerContainer(), topRateFilms);
+    this._getCardControllers(this._filmsExtraComponentComment.getInnerContainer(), topCommentFilms);
+  }
 
   _renderLoadButton() {
     const currentFilms = this._filmsModel.getFilms();
@@ -205,7 +249,7 @@ class PageController {
     const isEmptyData = !films.length;
 
     if (isEmptyData) {
-      render(this._contentContainerComponent.getElement(), this._noFilmsComponent);
+      replace(this._noFilmsComponent, this._loadingComponent);
     } else {
       replace(this._filmsListComponent, this._loadingComponent);
       this._loadMore(this._visibleCards, CARDS_STEP, films);
@@ -214,7 +258,7 @@ class PageController {
 
       this._filmsModel.addFilterChangeHandler(this._onFilterChange);
 
-      // this._renderExtra();
+      this._renderExtra();
     }
   }
 
