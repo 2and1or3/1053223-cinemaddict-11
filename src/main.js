@@ -12,11 +12,9 @@ import API from './api.js';
 
 import {render} from './utils.js';
 
-// import {filmsData} from './mock/film.js';
-// import {generateComments} from './mock/comment.js';
-import {FILTER_TYPES, SCREEN_IDS} from './const.js';
+import {SCREEN_IDS} from './const.js';
 
-const TOKEN = `Basic ok20kk29s2k2v99w09ak29s`;
+const TOKEN = `Basic ok20kk29s2k2v99w09ask29s`;
 
 const onScreenChange = (screenId) => {
   switch (screenId) {
@@ -45,6 +43,8 @@ const commentsModel = new CommentsModel();
 
 const api = new API(TOKEN);
 const filmsModel = new FilmsModel();
+
+const profileComponent = new ProfileComponent(header, filmsModel);
 const filtersController = new FiltersController(main, filmsModel);
 const statisticComponent = new StatisticComponent(main, filmsModel);
 const pageController = new PageController(main, api, filmsModel, commentsModel);
@@ -66,13 +66,10 @@ api.getFilms()
   filtersController.render();
   filtersController.setScreenChangeHandler(onScreenChange);
 
-  const user = {count: filtersController.getFilters()[FILTER_TYPES.HISTORY].count};
-  render(header, new ProfileComponent(user));
+  profileComponent.render();
 
   statisticComponent.render();
   statisticComponent.hide();
-
-  filmsModel.addDataChangeHandler(statisticComponent.rerender.bind(statisticComponent));
 
   pageController.render();
 

@@ -4,6 +4,7 @@ const SORT_TYPES = {
   DEFAULT: `default`,
   DATE: `date`,
   RATING: `rating`,
+  COMMENT: `comment`,
 };
 
 const ACTIVE_SORT_CLASS = `sort__button--active`;

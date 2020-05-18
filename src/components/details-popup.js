@@ -1,4 +1,4 @@
-import AbstractSmartComponent from './abstract-smart-component.js';
+import AbstractComponent from './abstract-component.js';
 import {dateDetailsFormat, durationFormat, dateCommentFormat} from '../utils.js';
 import he from "he";
 
@@ -14,6 +14,12 @@ const KEY_SEND_CODES = {
   ENTER: 13,
 };
 
+const BUTTON_STATES = {
+  DELETE: {
+    initial: `Delete`,
+    inProcess: `Deleting...`,
+  },
+};
 
 const isSendKeyPressed = (evt) => evt.keyCode === KEY_SEND_CODES.CTRL || evt.keyCode === KEY_SEND_CODES.ENTER;
 
@@ -177,7 +183,7 @@ const createDetailsPopuptemplate = function (film, comments) {
               </label>
 
               <div class="film-details__emoji-list">
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile" checked>
+                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
                 <label class="film-details__emoji-label" for="emoji-smile">
                   <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
                 </label>
@@ -205,7 +211,7 @@ const createDetailsPopuptemplate = function (film, comments) {
   );
 };
 
-class Details extends AbstractSmartComponent {
+class Details extends AbstractComponent {
   constructor(film, comments) {
     super();
     this._film = film;
@@ -216,6 +222,8 @@ class Details extends AbstractSmartComponent {
     this._currentEmotion = null;
     this._outerContainer = document.querySelector(`.films`);
     this._emojiElement = null;
+
+    this._addCommentsHandler = null;
   }
 
   _setCommentEmojiChangeHandler() {
@@ -238,8 +246,14 @@ class Details extends AbstractSmartComponent {
 
   _resetFields() {
     const container = this.getElement().querySelector(`.film-details__new-comment`);
+    container.classList.remove(`shake`);
     const textField = container.querySelector(`.film-details__comment-input`);
     textField.value = ``;
+
+    const currentEmotionInput = container.querySelector(`.film-details__emoji-item:checked`);
+    if (currentEmotionInput) {
+      currentEmotionInput.checked = false;
+    }
 
     const emotionField = container.querySelector(`.film-details__add-emoji-label img`);
 
@@ -292,6 +306,8 @@ class Details extends AbstractSmartComponent {
 
            comment.addEventListener(`click`, (evt) => {
              if (evt.target === deleteButton) {
+               deleteButton.textContent = BUTTON_STATES.DELETE.inProcess;
+               deleteButton.disabled = true;
                cb(this._film, index);
              }
            });
@@ -299,6 +315,7 @@ class Details extends AbstractSmartComponent {
   }
 
   setAddCommentHandler(cb) {
+    this._addCommentsHandler = cb;
     const pressed = new Set();
 
     const onKeyUp = (evt) => pressed.delete(evt.keyCode);
@@ -344,6 +361,41 @@ class Details extends AbstractSmartComponent {
   hide() {
     this._resetFields();
     this.getElement().remove();
+  }
+
+  toggleCommentForm(boolean) {
+    this._resetFields();
+    const textField = this.getElement().querySelector(`.film-details__comment-input`);
+    textField.disabled = boolean;
+
+    const emojies = this.getElement().querySelectorAll(`.film-details__emoji-item`);
+    emojies.forEach((emoji) => {
+      emoji.disabled = boolean;
+    });
+
+    if (!boolean) {
+      this.getElement().querySelector(`.film-details__new-comment`).classList.add(`shake`);
+
+      this.setAddCommentHandler(this._addCommentsHandler);
+    }
+  }
+
+  shakeComment(commentIndex) {
+    const currentComment = this.getElement().querySelectorAll(`.film-details__comment`)[commentIndex];
+
+    // if (currentComment.classList.contains(`shake`)) {
+    //   currentComment.classList.remove(`shake`);
+    //   console.log(`delete shake`);
+    // }
+    const deleteButton = currentComment.querySelector(`.film-details__comment-delete`);
+    deleteButton.disabled = false;
+    deleteButton.textContent = BUTTON_STATES.DELETE.initial;
+
+    currentComment.classList.add(`shake`);
+
+    setTimeout(() => {
+      currentComment.classList.remove(`shake`);
+    }, 600);
   }
 }
 

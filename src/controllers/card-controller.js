@@ -52,6 +52,10 @@ class CardController {
   _changeFilmState(property, film) {
     const changedFilm = {[property]: !film[property]};
 
+    if (property === FILM_PROPERTIES.IS_WATCHED) {
+      changedFilm.watchDate = film.watchDate ? null : new Date();
+    }
+
     const newFilm = Object.assign({}, film, changedFilm);
     this._onDataChange(newFilm);
   }
@@ -96,6 +100,7 @@ class CardController {
     if (isOpened) {
       this._detailsComponent.show();
       this._detailsComponent.setCloseClickHandler(this._closePopup);
+      document.addEventListener(`keydown`, this._onEscPress);
     }
   }
 
@@ -105,6 +110,14 @@ class CardController {
 
   setDefaultView(evt) {
     this._closePopup(evt);
+  }
+
+  toggleCommentForm(boolean) {
+    this._detailsComponent.toggleCommentForm(boolean);
+  }
+
+  shakeComment(commentIndex) {
+    this._detailsComponent.shakeComment(commentIndex);
   }
 }
 

@@ -6,15 +6,13 @@ class AbstractSmartComponent extends AbstractComponent {
     throw new Error(`${ERRORS.IMPLEMENT_RECOVERY_LISTENERS}`);
   }
 
-  rerender(film) {
+  rerender() {
     const oldElement = this._element;
     this.removeElement();
     const parent = oldElement.parentElement;
     const newElement = this.getElement();
 
     parent.replaceChild(newElement, oldElement);
-
-    this.recoveryListeners(film);
   }
 }
 

@@ -80,6 +80,17 @@ class FilmAdapter {
 
     return rawFilm;
   }
+
+  static toRAWComment(comment) {
+
+    const rawComment = {
+      "comment": comment.text,
+      "date": comment.date,
+      "emotion": comment.emotion,
+    };
+
+    return rawComment;
+  }
 }
 
 export default FilmAdapter;
