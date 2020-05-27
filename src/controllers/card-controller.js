@@ -46,7 +46,8 @@ class CardController {
       this._detailsComponent.setComments(comments);
 
       this._detailsComponent.show();
-      this._detailsComponent.rerender(this._recoveryListeners.bind(this));
+      // this._detailsComponent.rerender(this._recoveryListeners.bind(this));
+      this._detailsComponent.rerender();
 
       this._detailsComponent.setCloseClickHandler(this._closePopup);
       document.addEventListener(`keydown`, this._onEscPress);
@@ -111,6 +112,7 @@ class CardController {
 
     this._cardComponent = newCardComponent;
     this._recoveryListeners(film);
+    this._detailsComponent.rerender();
 
     if (isOpened) {
       this._detailsComponent.show();

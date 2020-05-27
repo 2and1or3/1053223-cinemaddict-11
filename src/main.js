@@ -16,7 +16,7 @@ import {render} from './utils.js';
 
 import {SCREEN_IDS} from './const.js';
 
-const TOKEN = `Basic ok20kk29s2k2v99w09ask29s`;
+const TOKEN = `Basic ok20kk292s2k2v99w09as255k29s`;
 
 const STORAGE_PREFIX = `local-storage`;
 const STORAGE_VERSION = `v1`;
@@ -83,12 +83,12 @@ apiWithProvider.getFilms()
   throw new Error(err);
 });
 
-window.addEventListener(`load`, () => {
-  navigator.serviceWorker.register(`./sw.js`)
-  .catch((err) => {
-    throw new Error(err);
-  });
-});
+// window.addEventListener(`load`, () => {
+//   navigator.serviceWorker.register(`./sw.js`)
+//   .catch((err) => {
+//     throw new Error(err);
+//   });
+// });
 
 window.addEventListener(`offline`, () => {
   document.title += ` ${PAGE_TITLE_OFFLINE}`;

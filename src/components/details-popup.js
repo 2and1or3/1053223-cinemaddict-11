@@ -381,7 +381,6 @@ class Details extends AbstractSmartComponent {
 
     if (!boolean) {
       this.getElement().querySelector(`.film-details__new-comment`).classList.add(`shake`);
-
       this.setAddCommentHandler(this._addCommentsHandler);
     }
   }
@@ -408,10 +407,11 @@ class Details extends AbstractSmartComponent {
     this._comments = comments;
   }
 
-  rerender(outerRecoveryListeners) {
+  // rerender(outerRecoveryListeners) {
+  rerender() {
     super.rerender();
     this._recoveryListeners();
-    outerRecoveryListeners(this._film);
+    // outerRecoveryListeners(this._film);
   }
 }
 
