@@ -12,8 +12,10 @@ const FILM_PROPERTIES = {
 
 
 class CardController {
-  constructor(container, onDataChange, onViewChange, onCommentDelete, onCommentAdd) {
+  constructor(container, api, commentsModel, onDataChange, onViewChange, onCommentDelete, onCommentAdd) {
     this._container = container;
+    this._api = api;
+    this._commentsModel = commentsModel;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
     this._onCommentDelete = onCommentDelete;
@@ -21,6 +23,7 @@ class CardController {
 
     this._cardComponent = null;
     this._detailsComponent = null;
+    this._filmId = null;
 
     this._onEscPress = this._onEscPress.bind(this);
     this._closePopup = this._closePopup.bind(this);
@@ -37,10 +40,20 @@ class CardController {
     evt.preventDefault();
     this._onViewChange(evt);
 
-    this._detailsComponent.show();
-    this._detailsComponent.setCloseClickHandler(this._closePopup);
+    this._api.getCommentsByFilmId(this._filmId)
+    .then((comments) => {
+      this._commentsModel.setComments(comments, this._filmId);
+      this._detailsComponent.setComments(comments);
 
-    document.addEventListener(`keydown`, this._onEscPress);
+      this._detailsComponent.show();
+      this._detailsComponent.rerender(this._recoveryListeners.bind(this));
+
+      this._detailsComponent.setCloseClickHandler(this._closePopup);
+      document.addEventListener(`keydown`, this._onEscPress);
+    })
+    .catch((err) => {
+      throw new Error(err);
+    });
   }
 
   _closePopup(evt) {
@@ -74,10 +87,11 @@ class CardController {
     this._detailsComponent.setAddCommentHandler(this._onCommentAdd);
   }
 
-  render(film, comments) {
+  render(film) {
+    this._filmId = film.id;
 
     this._cardComponent = new CardComponent(film);
-    this._detailsComponent = new DetailsComponent(film, comments);
+    this._detailsComponent = new DetailsComponent(film);
 
     render(this._container, this._cardComponent);
 
@@ -89,7 +103,8 @@ class CardController {
 
     removeComponent(this._detailsComponent);
     const newCardComponent = new CardComponent(film);
-    this._detailsComponent = new DetailsComponent(film, comments);
+    this._detailsComponent = new DetailsComponent(film);
+    this._detailsComponent.setComments(comments);
 
     render(this._cardComponent.getElement(), newCardComponent, RENDER_METHODS.AFTER);
     removeComponent(this._cardComponent);

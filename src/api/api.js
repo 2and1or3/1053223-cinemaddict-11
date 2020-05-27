@@ -1,8 +1,9 @@
-import FilmAdapter from './models/film-adapter.js';
+import FilmAdapter from '../models/film-adapter.js';
 
 const MAIN_URL = `https://11.ecmascript.pages.academy/cinemaddict`;
 const MOVIES_POSTFIX = `movies`;
 const COMMENTS_POSTFIX = `comments`;
+const SYNC_URL = `sync`;
 
 const METHODS = {
   POST: `POST`,
@@ -11,9 +12,14 @@ const METHODS = {
   DELETE: `DELETE`,
 };
 
+const REQUEST_CODES = {
+  OK: 200,
+  REDIRECT: 300,
+};
+
 const checkStatus = (response) => {
 
-  if (response.status >= 200 && response.status < 300) {
+  if (response.status >= REQUEST_CODES.OK && response.status < REQUEST_CODES.REDIRECT) {
     return response;
   } else {
     throw new Error(response.status);
@@ -111,6 +117,22 @@ class API {
 
     return this._getRequest(headers, url, METHODS.DELETE)
             .then((response) => response.ok)
+            .catch((err) => {
+              throw new Error(err);
+            });
+  }
+
+  sync(films) {
+    const headers = new Headers();
+    headers.append(`Content-Type`, `application/json`);
+
+    const url = MOVIES_POSTFIX + `/` + SYNC_URL;
+
+    films = films.map((film) => FilmAdapter.toRAWFilm(film));
+    const body = JSON.stringify(films);
+
+    return this._getRequest(headers, url, METHODS.POST, body)
+            .then((response) => response.json())
             .catch((err) => {
               throw new Error(err);
             });

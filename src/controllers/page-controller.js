@@ -73,12 +73,14 @@ class PageController {
         .map((film) => {
           const cardController =
           new CardController(container,
+              this._api,
+              this._commentsModel,
               this._onDataChange,
               this._onViewChange,
               this._onCommentDelete,
               this._onCommentAdd);
 
-          cardController.render(film, this._commentsModel.getComments(film.id));
+          cardController.render(film);
           return cardController;
         });
 
@@ -130,8 +132,19 @@ class PageController {
     const sortedFilms = this._getSortedFilms(sortType);
     this._clear();
 
-    this._loadMore(this._visibleCards, CARDS_STEP, sortedFilms);
-    this._renderLoadButton();
+    const isEmptyData = !sortedFilms.length;
+
+    if (isEmptyData) {
+      replace(this._noFilmsComponent, this._filmsListComponent);
+    } else {
+
+      if (this._container.contains(this._noFilmsComponent.getElement())) {
+        replace(this._filmsListComponent, this._noFilmsComponent);
+      }
+
+      this._loadMore(this._visibleCards, CARDS_STEP, sortedFilms);
+      this._renderLoadButton();
+    }
   }
 
   _clear() {
@@ -149,7 +162,12 @@ class PageController {
     .then((film) => {
       this._filmsModel.updateFilm(film);
 
-      targetController.updateRender(film, this._commentsModel.getComments(film.id));
+      let comments = this._commentsModel.getComments(film.id);
+      comments = comments ? comments : [];
+
+      targetController.updateRender(film, comments);
+
+      this._repeatRender(this._sortComponent.getCurrentSort());
       this._renderExtra();
     })
     .catch((err) => {
@@ -162,21 +180,21 @@ class PageController {
     const targetController = this._visibleCardControllers
                              .find((controller) => controller.getId() === film.id);
 
-    setTimeout(() => {
-      this._api.deleteComment(commentId)
+    this._api.deleteComment(commentId)
       .then(() => {
         this._commentsModel.deleteComment(film.id, commentIndex);
 
-
         film.comments.splice(commentIndex, 1);
 
-        targetController.updateRender(film, this._commentsModel.getComments(film.id));
+        let comments = this._commentsModel.getComments(film.id);
+        comments = comments ? comments : [];
+
+        targetController.updateRender(film, comments);
         this._renderExtra();
       })
       .catch(() => {
         targetController.shakeComment(commentIndex);
       });
-    }, 2000);
   }
 
   _onCommentAdd(film, newComment) {
@@ -185,19 +203,20 @@ class PageController {
 
     targetController.toggleCommentForm(COMMENT_FORM_ACTIVE.OFF);
 
-    setTimeout(() => {
-      this._api.addComment(film.id, newComment)
+    this._api.addComment(film.id, newComment)
       .then((localObj) => {
         this._filmsModel.updateFilm(localObj.movie);
         this._commentsModel.setComments(localObj.comments, film.id);
 
-        targetController.updateRender(localObj.movie, this._commentsModel.getComments(film.id));
+        let comments = this._commentsModel.getComments(film.id);
+        comments = comments ? comments : [];
+
+        targetController.updateRender(localObj.movie, comments);
         this._renderExtra();
       })
       .catch(() => {
         targetController.toggleCommentForm(COMMENT_FORM_ACTIVE.ON);
       });
-    }, 2000);
   }
 
   _onViewChange(evt) {

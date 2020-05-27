@@ -61,6 +61,50 @@ const PERIODS = {
   },
 };
 
+const chartOptions = {
+  plugins: {
+    datalabels: {
+      font: {
+        size: 20
+      },
+      color: `#ffffff`,
+      anchor: `start`,
+      align: `start`,
+      offset: 40,
+    }
+  },
+  scales: {
+    yAxes: [{
+      ticks: {
+        fontColor: `#ffffff`,
+        padding: 100,
+        fontSize: 20
+      },
+      gridLines: {
+        display: false,
+        drawBorder: false
+      },
+      barThickness: 24
+    }],
+    xAxes: [{
+      ticks: {
+        display: false,
+        beginAtZero: true
+      },
+      gridLines: {
+        display: false,
+        drawBorder: false
+      },
+    }],
+  },
+  legend: {
+    display: false
+  },
+  tooltips: {
+    enabled: false
+  }
+};
+
 const periodControlsMarkup = (id, currentPeriod) => {
   const title = PERIODS[id].title;
   const isChecked = id === currentPeriod ? `checked` : ``;
@@ -206,49 +250,7 @@ class Statistic extends AbstractSmartComponent {
           anchor: `start`
         }]
       },
-      options: {
-        plugins: {
-          datalabels: {
-            font: {
-              size: 20
-            },
-            color: `#ffffff`,
-            anchor: `start`,
-            align: `start`,
-            offset: 40,
-          }
-        },
-        scales: {
-          yAxes: [{
-            ticks: {
-              fontColor: `#ffffff`,
-              padding: 100,
-              fontSize: 20
-            },
-            gridLines: {
-              display: false,
-              drawBorder: false
-            },
-            barThickness: 24
-          }],
-          xAxes: [{
-            ticks: {
-              display: false,
-              beginAtZero: true
-            },
-            gridLines: {
-              display: false,
-              drawBorder: false
-            },
-          }],
-        },
-        legend: {
-          display: false
-        },
-        tooltips: {
-          enabled: false
-        }
-      }
+      options: chartOptions,
     });
 
     return myChart;
