@@ -8,13 +8,21 @@ import FiltersController from './controllers/filters-controller.js';
 import FilmsModel from './models/films.js';
 import CommentsModel from './models/comments.js';
 
-import API from './api.js';
+import API from './api/api.js';
+import Provider from './api/provider.js';
+import Store from './api/store.js';
 
 import {render} from './utils.js';
 
 import {SCREEN_IDS} from './const.js';
 
 const TOKEN = `Basic ok20kk29s2k2v99w09ask29s`;
+
+const STORAGE_PREFIX = `local-storage`;
+const STORAGE_VERSION = `v1`;
+const STORAGE_NAME = STORAGE_PREFIX + STORAGE_VERSION;
+
+const PAGE_TITLE_OFFLINE = `[offline]`;
 
 const onScreenChange = (screenId) => {
   switch (screenId) {
@@ -42,25 +50,20 @@ let quantityOfFilms;
 const commentsModel = new CommentsModel();
 
 const api = new API(TOKEN);
+const storage = new Store(STORAGE_NAME, window.localStorage);
+const apiWithProvider = new Provider(api, storage);
 const filmsModel = new FilmsModel();
 
 const profileComponent = new ProfileComponent(header, filmsModel);
 const filtersController = new FiltersController(main, filmsModel);
 const statisticComponent = new StatisticComponent(main, filmsModel);
-const pageController = new PageController(main, api, filmsModel, commentsModel);
+const pageController = new PageController(main, apiWithProvider, filmsModel, commentsModel);
 
 
-api.getFilms()
+apiWithProvider.getFilms()
 .then((films) => {
   quantityOfFilms = films.length;
   filmsModel.setFilms(films);
-
-  const promises = films.map((film) => api.getCommentsByFilmId(film.id));
-  return promises;
-})
-.then((commentsPromises) => Promise.all(commentsPromises))
-.then((comments) => {
-  comments.forEach((comment, index) => commentsModel.setComments(comment, index));
 })
 .then(() => {
   filtersController.render();
@@ -78,4 +81,20 @@ api.getFilms()
 .catch((err) => {
   filmsModel.setFilms([]);
   throw new Error(err);
+});
+
+window.addEventListener(`load`, () => {
+  navigator.serviceWorker.register(`./sw.js`)
+  .catch((err) => {
+    throw new Error(err);
+  });
+});
+
+window.addEventListener(`offline`, () => {
+  document.title += ` ${PAGE_TITLE_OFFLINE}`;
+});
+
+window.addEventListener(`online`, () => {
+  document.title = document.title.replace(PAGE_TITLE_OFFLINE, ``);
+  apiWithProvider.sync();
 });

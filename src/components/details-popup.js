@@ -1,4 +1,4 @@
-import AbstractComponent from './abstract-component.js';
+import AbstractSmartComponent from './abstract-smart-component.js';
 import {dateDetailsFormat, durationFormat, dateCommentFormat} from '../utils.js';
 import he from "he";
 
@@ -21,7 +21,7 @@ const BUTTON_STATES = {
   },
 };
 
-const isSendKeyPressed = (evt) => evt.keyCode === KEY_SEND_CODES.CTRL || evt.keyCode === KEY_SEND_CODES.ENTER;
+const isSendKeyPressed = (evt) => evt.ctrlKey || evt.metakey || evt.keyCode === KEY_SEND_CODES.ENTER;
 
 const getEmptyComment = () => {
   const now = new Date();
@@ -211,11 +211,11 @@ const createDetailsPopuptemplate = function (film, comments) {
   );
 };
 
-class Details extends AbstractComponent {
-  constructor(film, comments) {
+class Details extends AbstractSmartComponent {
+  constructor(film) {
     super();
     this._film = film;
-    this._comments = comments;
+    this._comments = [];
     this._isWatchList = film.isWatchList;
     this._isWatched = film.isWatched;
     this._isFavorite = film.isFavorite;
@@ -301,13 +301,19 @@ class Details extends AbstractComponent {
     const comments = this.getElement().querySelectorAll(`.film-details__comment`);
 
     Array.from(comments)
-         .forEach((comment, index) => {
+         .forEach((comment, index, arr) => {
            const deleteButton = comment.querySelector(`.film-details__comment-delete`);
 
            comment.addEventListener(`click`, (evt) => {
              if (evt.target === deleteButton) {
                deleteButton.textContent = BUTTON_STATES.DELETE.inProcess;
                deleteButton.disabled = true;
+
+               arr.forEach((targetComment) => {
+                 const targetDeleteButton = targetComment.querySelector(`.film-details__comment-delete`);
+                 targetDeleteButton.disabled = true;
+               });
+
                cb(this._film, index);
              }
            });
@@ -396,6 +402,16 @@ class Details extends AbstractComponent {
     setTimeout(() => {
       currentComment.classList.remove(`shake`);
     }, 600);
+  }
+
+  setComments(comments) {
+    this._comments = comments;
+  }
+
+  rerender(outerRecoveryListeners) {
+    super.rerender();
+    this._recoveryListeners();
+    outerRecoveryListeners(this._film);
   }
 }
 

@@ -28,6 +28,7 @@ class FilterController {
     this._filters = filters;
 
     this._menuComponent = null;
+    this._currentFilter = FILTER_TYPES.ALL;
 
     this._onDataChange = this._onDataChange.bind(this);
     this._onFilterChange = this._onFilterChange.bind(this);
@@ -42,6 +43,7 @@ class FilterController {
   }
 
   _onFilterChange(newFilter) {
+    this._currentFilter = newFilter;
     this._filmsModel.changeCurrentFilter(newFilter);
   }
 
@@ -58,7 +60,7 @@ class FilterController {
   render() {
     this._updateFilters();
 
-    this._menuComponent = new MenuComponent(this._filters);
+    this._menuComponent = new MenuComponent(this._filters, this._currentFilter);
     render(this._container, this._menuComponent, RENDER_METHODS.PREPEND);
 
     this._menuComponent.setFilterHandler(this._onFilterChange);

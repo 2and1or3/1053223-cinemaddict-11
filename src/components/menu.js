@@ -18,12 +18,12 @@ const createFilterTemplate = (key, filter, isChecked) => {
   );
 };
 
-const createMenuTemplate = function (filters) {
+const createMenuTemplate = function (filters, currentFilter) {
   const filtersKeys = Object.keys(filters);
 
   const filterMarkup =
   filtersKeys
-  .map((key, i) => createFilterTemplate(key, filters[key], i === 0))
+  .map((key) => createFilterTemplate(key, filters[key], key === currentFilter))
   .join(`\n`);
 
   return (
@@ -37,13 +37,14 @@ const createMenuTemplate = function (filters) {
 };
 
 class Menu extends AbstractComponent {
-  constructor(filters) {
+  constructor(filters, currentFilter) {
     super();
     this._filters = filters;
+    this._currentFilter = currentFilter;
   }
 
   getTemplate() {
-    return createMenuTemplate(this._filters);
+    return createMenuTemplate(this._filters, this._currentFilter);
   }
 
   setFilterHandler(cb) {
