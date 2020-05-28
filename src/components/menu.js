@@ -65,6 +65,8 @@ class Menu extends AbstractComponent {
 
   setScreenChangeHandler(cb) {
     const container = this.getElement();
+    const statisticControl = container.querySelector(`.${STATISTIC_CLASS}`);
+
 
     container.addEventListener(`click`, (evt) => {
 
@@ -72,8 +74,13 @@ class Menu extends AbstractComponent {
         const isStatistic = evt.target.classList.contains(STATISTIC_CLASS);
 
         if (isStatistic) {
+          const filterActive = container.querySelector(`.${ACTIVE_CLASS}`);
+          filterActive.classList.remove(ACTIVE_CLASS);
+          statisticControl.classList.add(ACTIVE_CLASS);
+
           cb(SCREEN_IDS.STATISTIC);
         } else {
+          statisticControl.classList.remove(ACTIVE_CLASS);
           cb(SCREEN_IDS.CARDS);
         }
       }

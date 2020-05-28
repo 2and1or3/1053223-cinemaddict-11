@@ -75,6 +75,7 @@ class PageController {
         .map((film) => {
           const cardController =
           new CardController(container,
+              film,
               this._api,
               this._commentsModel,
               this._onDataChange,
@@ -157,19 +158,17 @@ class PageController {
   }
 
   _onDataChange(newFilm) {
-    const targetController = this._visibleCardControllers
-                              .concat(this._rateCardControllers)
-                              .concat(this._commentCardControllers)
-                              .find((controller) => controller.getId() === newFilm.id);
+    const targetController =
+      this._visibleCardControllers
+        .concat(this._rateCardControllers)
+        .concat(this._commentCardControllers)
+        .find((controller) => controller.getId() === newFilm.id);
 
     this._api.updateFilm(newFilm)
     .then((film) => {
       this._filmsModel.updateFilm(film);
 
-      let comments = this._commentsModel.getComments(film.id);
-      comments = comments ? comments : [];
-
-      targetController.updateRender(film, comments);
+      targetController.updateRender(film);
 
       this._repeatRender(this._sortComponent.getCurrentSort());
       this._renderExtra();
@@ -181,10 +180,11 @@ class PageController {
 
   _onCommentDelete(film, commentIndex) {
     const commentId = film.comments[commentIndex];
-    const targetController = this._visibleCardControllers
-                              .concat(this._rateCardControllers)
-                              .concat(this._commentCardControllers)
-                              .find((controller) => controller.getId() === film.id);
+    const targetControllers =
+      this._visibleCardControllers
+        .concat(this._rateCardControllers)
+        .concat(this._commentCardControllers)
+        .filter((controller) => controller.getId() === film.id);
 
     this._api.deleteComment(commentId)
       .then(() => {
@@ -192,23 +192,25 @@ class PageController {
 
         film.comments.splice(commentIndex, 1);
 
-        let comments = this._commentsModel.getComments(film.id);
-        comments = comments ? comments : [];
+        targetControllers.forEach((controller) => {
+          controller.updateRender(film);
+        });
 
-        targetController.updateRender(film, comments);
         this._renderExtra();
       })
       .catch(() => {
-        targetController.shakeComment(commentIndex);
+        targetControllers.forEach((controller) => {
+          controller.shakeComment(commentIndex);
+        });
       });
   }
 
   _onCommentAdd(film, newComment) {
-    const targetController = this._visibleCardControllers
-                              .concat(this._rateCardControllers)
-                              .concat(this._commentCardControllers)
-                              .find((controller) => controller.getId() === film.id);
-    targetController.toggleCommentForm(COMMENT_FORM_ACTIVE.OFF);
+    const targetControllers =
+      this._visibleCardControllers
+        .concat(this._rateCardControllers)
+        .concat(this._commentCardControllers)
+        .filter((controller) => controller.getId() === film.id);
 
     this._api.addComment(film.id, newComment)
       .then((localObj) => {
@@ -216,14 +218,15 @@ class PageController {
         this._filmsModel.updateFilm(localObj.movie);
         this._commentsModel.setComments(localObj.comments, film.id);
 
-        let comments = this._commentsModel.getComments(film.id);
-        comments = comments ? comments : [];
-
-        targetController.updateRender(localObj.movie, comments);
+        targetControllers.forEach((controller) => {
+          controller.updateRender(localObj.movie);
+        });
         this._renderExtra();
       })
       .catch(() => {
-        targetController.toggleCommentForm(COMMENT_FORM_ACTIVE.ON);
+        targetControllers.forEach((controller) => {
+          controller.toggleCommentForm(COMMENT_FORM_ACTIVE.ON);
+        });
       });
   }
 
@@ -239,17 +242,17 @@ class PageController {
   }
 
   _renderExtra() {
-    this._rateCardControllers = [];
-    this._commentCardControllers = [];
+    const films = this._filmsModel.getAllFilms().slice();
 
-    let topRateFilms = this._filmsModel.getAllFilms().slice();
-    let topCommentFilms = topRateFilms.slice();
+    let topRateFilms = films.slice();
+    let topCommentFilms = films.slice();
 
     topRateFilms.sort(SORT_FUNCTIONS[SORT_TYPES.RATING]);
     topCommentFilms.sort(SORT_FUNCTIONS[SORT_TYPES.COMMENT]);
 
     topRateFilms = topRateFilms.slice(0, QUANTITY_EXTRA_CARDS);
     topCommentFilms = topCommentFilms.slice(0, QUANTITY_EXTRA_CARDS);
+
 
     const maxRating = topRateFilms[0].rating;
     const maxCommentsLength = topCommentFilms[0].comments.length;
@@ -265,13 +268,31 @@ class PageController {
       if (maxCommentsLength) {
         render(this._contentContainerComponent.getElement(), this._filmsExtraComponentComment);
       }
-    } else {
-      this._filmsExtraComponentRate.getInnerContainer().innerHTML = ``;
-      this._filmsExtraComponentComment.getInnerContainer().innerHTML = ``;
     }
 
-    this._rateCardControllers = this._getCardControllers(this._filmsExtraComponentRate.getInnerContainer(), topRateFilms);
-    this._commentCardControllers = this._getCardControllers(this._filmsExtraComponentComment.getInnerContainer(), topCommentFilms);
+    this._extraControllersHandler(topRateFilms, this._rateCardControllers, this._filmsExtraComponentRate.getInnerContainer());
+    this._extraControllersHandler(topCommentFilms, this._commentCardControllers, this._filmsExtraComponentComment.getInnerContainer());
+  }
+
+  _extraControllersHandler(extraFilms, controllers, container) {
+    for (let i = 0; i < extraFilms.length; i++) {
+      const film = extraFilms[i];
+      const controller = controllers[i];
+
+      if (controller) {
+        const isEqual = film.id === controller.getId();
+
+        if (!isEqual) {
+          controllers[i].destroy();
+          const [newController] = this._getCardControllers(container, [film]);
+          controllers[i] = newController;
+        }
+
+      } else {
+        const [newController] = this._getCardControllers(container, [film]);
+        controllers.push(newController);
+      }
+    }
   }
 
   _renderLoadButton() {

@@ -1,8 +1,7 @@
 import CardComponent from '../components/card.js';
-import DetailsComponent from '../components/details-popup.js';
+import DetailsComponent from '../components/details.js';
 
 import {render, isEscPress, removeComponent} from '../utils.js';
-import {RENDER_METHODS} from '../const.js';
 
 const FILM_PROPERTIES = {
   IS_WATCHLIST: `isWatchList`,
@@ -12,7 +11,7 @@ const FILM_PROPERTIES = {
 
 
 class CardController {
-  constructor(container, api, commentsModel, onDataChange, onViewChange, onCommentDelete, onCommentAdd) {
+  constructor(container, film, api, commentsModel, onDataChange, onViewChange, onCommentDelete, onCommentAdd) {
     this._container = container;
     this._api = api;
     this._commentsModel = commentsModel;
@@ -23,7 +22,7 @@ class CardController {
 
     this._cardComponent = null;
     this._detailsComponent = null;
-    this._filmId = null;
+    this._film = film;
 
     this._onEscPress = this._onEscPress.bind(this);
     this._closePopup = this._closePopup.bind(this);
@@ -40,85 +39,93 @@ class CardController {
     evt.preventDefault();
     this._onViewChange(evt);
 
-    this._api.getCommentsByFilmId(this._filmId)
+    this._api.getCommentsByFilmId(this._film.id)
     .then((comments) => {
-      this._commentsModel.setComments(comments, this._filmId);
-      this._detailsComponent.setComments(comments);
 
-      this._detailsComponent.show();
-      // this._detailsComponent.rerender(this._recoveryListeners.bind(this));
-      this._detailsComponent.rerender();
+      this._commentsModel.setComments(comments, this._film.id);
 
-      this._detailsComponent.setCloseClickHandler(this._closePopup);
-      document.addEventListener(`keydown`, this._onEscPress);
+      this._initDetails(comments);
     })
     .catch((err) => {
       throw new Error(err);
     });
   }
 
-  _closePopup(evt) {
-    evt.preventDefault();
-    this._detailsComponent.hide();
-    document.removeEventListener(`keydown`, this._onEscPress);
+  _initDetails(comments) {
+    this._detailsComponent = new DetailsComponent(this._film, comments);
+
+    this._detailsComponent.show();
+
+    this._detailsComponent.setCloseClickHandler(this._closePopup);
+    document.addEventListener(`keydown`, this._onEscPress);
+    this._recoveryDetailsListeners();
   }
 
-  _changeFilmState(property, film) {
-    const changedFilm = {[property]: !film[property]};
+  _closePopup(evt) {
+    evt.preventDefault();
+    if (this._detailsComponent) {
+      this._detailsComponent.hide();
+      document.removeEventListener(`keydown`, this._onEscPress);
+      this._detailsComponent = null;
+    }
+  }
+
+  _changeFilmState(property) {
+    const changedFilm = {[property]: !this._film[property]};
 
     if (property === FILM_PROPERTIES.IS_WATCHED) {
-      changedFilm.watchDate = film.watchDate ? null : new Date();
+      changedFilm.watchDate = this._film.watchDate ? null : new Date();
     }
 
-    const newFilm = Object.assign({}, film, changedFilm);
+    const newFilm = Object.assign({}, this._film, changedFilm);
     this._onDataChange(newFilm);
   }
 
-  _recoveryListeners(film) {
+  _recoveryListeners() {
     this._cardComponent.setOpenClickHandlers(this._openPopup);
-    this._cardComponent.setWatchListClickHandler(() => this._changeFilmState(FILM_PROPERTIES.IS_WATCHLIST, film));
-    this._cardComponent.setHistoryClickHandler(() => this._changeFilmState(FILM_PROPERTIES.IS_WATCHED, film));
-    this._cardComponent.setFavoriteClickHandler(() => this._changeFilmState(FILM_PROPERTIES.IS_FAVORITE, film));
+    this._cardComponent.setWatchListClickHandler(() => this._changeFilmState(FILM_PROPERTIES.IS_WATCHLIST));
+    this._cardComponent.setHistoryClickHandler(() => this._changeFilmState(FILM_PROPERTIES.IS_WATCHED));
+    this._cardComponent.setFavoriteClickHandler(() => this._changeFilmState(FILM_PROPERTIES.IS_FAVORITE));
+  }
 
-    this._detailsComponent.setWatchListClickHandler(() => this._changeFilmState(FILM_PROPERTIES.IS_WATCHLIST, film));
-    this._detailsComponent.setHistoryClickHandler(() => this._changeFilmState(FILM_PROPERTIES.IS_WATCHED, film));
-    this._detailsComponent.setFavoriteClickHandler(() => this._changeFilmState(FILM_PROPERTIES.IS_FAVORITE, film));
+  _recoveryDetailsListeners() {
+    this._detailsComponent.setWatchListClickHandler(() => this._changeFilmState(FILM_PROPERTIES.IS_WATCHLIST));
+    this._detailsComponent.setHistoryClickHandler(() => this._changeFilmState(FILM_PROPERTIES.IS_WATCHED));
+    this._detailsComponent.setFavoriteClickHandler(() => this._changeFilmState(FILM_PROPERTIES.IS_FAVORITE));
 
     this._detailsComponent.setDeleteCommentsHandler(this._onCommentDelete);
     this._detailsComponent.setAddCommentHandler(this._onCommentAdd);
   }
 
-  render(film) {
-    this._filmId = film.id;
-
-    this._cardComponent = new CardComponent(film);
-    this._detailsComponent = new DetailsComponent(film);
+  render() {
+    this._cardComponent = new CardComponent(this._film);
 
     render(this._container, this._cardComponent);
 
-    this._recoveryListeners(film);
+    this._recoveryListeners();
   }
 
-  updateRender(film, comments) {
-    const isOpened = document.querySelector(`.film-details`);
+  updateRender(film) {
+    this._film = film;
 
-    removeComponent(this._detailsComponent);
-    const newCardComponent = new CardComponent(film);
-    this._detailsComponent = new DetailsComponent(film);
-    this._detailsComponent.setComments(comments);
+    this._cardComponent.rerender(this._film);
+    this._recoveryListeners();
 
-    render(this._cardComponent.getElement(), newCardComponent, RENDER_METHODS.AFTER);
-    removeComponent(this._cardComponent);
+    if (this._detailsComponent) {
+      this._api.getCommentsByFilmId(this._film.id)
+      .then((comments) => {
 
-    this._cardComponent = newCardComponent;
-    this._recoveryListeners(film);
-    this._detailsComponent.rerender();
+        this._commentsModel.setComments(comments, this._film.id);
 
-    if (isOpened) {
-      this._detailsComponent.show();
-      this._detailsComponent.setCloseClickHandler(this._closePopup);
-      document.addEventListener(`keydown`, this._onEscPress);
+        this._detailsComponent.setComments(comments);
+        this._detailsComponent.rerender(this._film);
+        this._recoveryDetailsListeners();
+      })
+      .catch((err) => {
+        throw new Error(err);
+      });
     }
+
   }
 
   getId() {
@@ -135,6 +142,14 @@ class CardController {
 
   shakeComment(commentIndex) {
     this._detailsComponent.shakeComment(commentIndex);
+  }
+
+  destroy() {
+    removeComponent(this._cardComponent);
+
+    if (this._detailsComponent) {
+      removeComponent(this._detailsComponent);
+    }
   }
 }
 

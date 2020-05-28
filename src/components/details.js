@@ -212,10 +212,10 @@ const createDetailsPopuptemplate = function (film, comments) {
 };
 
 class Details extends AbstractSmartComponent {
-  constructor(film) {
+  constructor(film, comments) {
     super();
     this._film = film;
-    this._comments = [];
+    this._comments = comments;
     this._isWatchList = film.isWatchList;
     this._isWatched = film.isWatched;
     this._isFavorite = film.isFavorite;
@@ -344,6 +344,7 @@ class Details extends AbstractSmartComponent {
             newComment.text = he.encode(newText);
             newComment.emotion = newEmotion;
 
+            this.toggleCommentForm(true);
             cb(this._film, newComment);
 
             document.removeEventListener(`keydown`, onKeyDown);
@@ -360,7 +361,7 @@ class Details extends AbstractSmartComponent {
   show() {
     if (this._outerContainer) {
       this._outerContainer.append(this.getElement());
-      this._recoveryListeners();
+      this.rerender(this._film);
     }
   }
 
@@ -407,11 +408,10 @@ class Details extends AbstractSmartComponent {
     this._comments = comments;
   }
 
-  // rerender(outerRecoveryListeners) {
-  rerender() {
+  rerender(updatedFilm) {
+    this._film = updatedFilm;
     super.rerender();
     this._recoveryListeners();
-    // outerRecoveryListeners(this._film);
   }
 }
 
