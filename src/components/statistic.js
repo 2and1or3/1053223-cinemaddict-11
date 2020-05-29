@@ -191,14 +191,6 @@ class Statistic extends AbstractSmartComponent {
 
       this._genresCounts.push(count);
     });
-
-    this._onDataChange = this._onDataChange.bind(this);
-    this._filmsModel.addDataChangeHandler(this._onDataChange);
-  }
-
-  _onDataChange() {
-    this.render();
-    this.hide();
   }
 
   _getWatched(films) {
@@ -303,6 +295,11 @@ class Statistic extends AbstractSmartComponent {
 
     this._drawChart();
     this._periodChangeHandler();
+  }
+
+  show() {
+    this.render();
+    super.show();
   }
 }
 

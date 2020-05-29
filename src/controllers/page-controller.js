@@ -158,17 +158,19 @@ class PageController {
   }
 
   _onDataChange(newFilm) {
-    const targetController =
+    const targetControllers =
       this._visibleCardControllers
         .concat(this._rateCardControllers)
         .concat(this._commentCardControllers)
-        .find((controller) => controller.getId() === newFilm.id);
+        .filter((controller) => controller.getId() === newFilm.id);
 
     this._api.updateFilm(newFilm)
     .then((film) => {
       this._filmsModel.updateFilm(film);
-
-      targetController.updateRender(film);
+      // debugger;
+      targetControllers.forEach((controller) => {
+        controller.updateRender(film);
+      });
 
       this._repeatRender(this._sortComponent.getCurrentSort());
       this._renderExtra();

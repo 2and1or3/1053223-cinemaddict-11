@@ -56,7 +56,6 @@ class CardController {
 
     this._detailsComponent.show();
 
-    this._detailsComponent.setCloseClickHandler(this._closePopup);
     document.addEventListener(`keydown`, this._onEscPress);
     this._recoveryDetailsListeners();
   }
@@ -95,6 +94,7 @@ class CardController {
 
     this._detailsComponent.setDeleteCommentsHandler(this._onCommentDelete);
     this._detailsComponent.setAddCommentHandler(this._onCommentAdd);
+    this._detailsComponent.setCloseClickHandler(this._closePopup);
   }
 
   render() {
