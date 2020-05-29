@@ -83,12 +83,12 @@ apiWithProvider.getFilms()
   throw new Error(err);
 });
 
-// window.addEventListener(`load`, () => {
-//   navigator.serviceWorker.register(`./sw.js`)
-//   .catch((err) => {
-//     throw new Error(err);
-//   });
-// });
+window.addEventListener(`load`, () => {
+  navigator.serviceWorker.register(`./sw.js`)
+  .catch((err) => {
+    throw new Error(err);
+  });
+});
 
 window.addEventListener(`offline`, () => {
   document.title += ` ${PAGE_TITLE_OFFLINE}`;
