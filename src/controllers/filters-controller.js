@@ -34,6 +34,8 @@ class FilterController {
     this._onFilterChange = this._onFilterChange.bind(this);
 
     this._screenChangeHandler = null;
+
+    this._filmsModel.addDataChangeHandler(this._onDataChange);
   }
 
   _updateFilters() {
@@ -64,7 +66,6 @@ class FilterController {
     render(this._container, this._menuComponent, RENDER_METHODS.PREPEND);
 
     this._menuComponent.setFilterHandler(this._onFilterChange);
-    this._filmsModel.addDataChangeHandler(this._onDataChange);
   }
 
   getFilters() {

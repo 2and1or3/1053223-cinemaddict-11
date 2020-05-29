@@ -50,7 +50,7 @@ const dateDetailsFormat = (date) => {
 };
 
 const dateCommentFormat = (date) => {
-  const commentDate = moment(date).format(`YYYY/MM/DD HH:mm`);
+  const commentDate = moment(date).fromNow();
 
   return commentDate;
 };

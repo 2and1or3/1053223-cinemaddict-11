@@ -1,4 +1,4 @@
-import AbstractComponent from './abstract-component.js';
+import AbstractSmartComponent from './abstract-smart-component.js';
 import {addListeners, yearCardFormat, durationFormat} from '../utils.js';
 
 const DESCRIPTION_LENGTH = 139;
@@ -37,7 +37,7 @@ const createCardTemplate = function (film, commentsLenght) {
   );
 };
 
-class Card extends AbstractComponent {
+class Card extends AbstractSmartComponent {
   constructor(film) {
     super();
     this._film = film;
@@ -68,6 +68,11 @@ class Card extends AbstractComponent {
 
   setFavoriteClickHandler(cb) {
     this.getElement().querySelector(`.film-card__controls-item--favorite`).addEventListener(`click`, cb);
+  }
+
+  rerender(updatedFilm) {
+    this._film = updatedFilm;
+    super.rerender();
   }
 }
 

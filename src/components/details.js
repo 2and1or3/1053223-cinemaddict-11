@@ -21,7 +21,7 @@ const BUTTON_STATES = {
   },
 };
 
-const isSendKeyPressed = (evt) => evt.ctrlKey || evt.metakey || evt.keyCode === KEY_SEND_CODES.ENTER;
+const isSendKeysPressed = (evt) => (evt.ctrlKey || evt.metakey) && (evt.keyCode === KEY_SEND_CODES.ENTER);
 
 const getEmptyComment = () => {
   const now = new Date();
@@ -212,10 +212,10 @@ const createDetailsPopuptemplate = function (film, comments) {
 };
 
 class Details extends AbstractSmartComponent {
-  constructor(film) {
+  constructor(film, comments) {
     super();
     this._film = film;
-    this._comments = [];
+    this._comments = comments;
     this._isWatchList = film.isWatchList;
     this._isWatched = film.isWatched;
     this._isFavorite = film.isFavorite;
@@ -322,45 +322,37 @@ class Details extends AbstractSmartComponent {
 
   setAddCommentHandler(cb) {
     this._addCommentsHandler = cb;
-    const pressed = new Set();
-
-    const onKeyUp = (evt) => pressed.delete(evt.keyCode);
 
     const onKeyDown = (evt) => {
-      if (isSendKeyPressed(evt)) {
+      const isAllPressed = isSendKeysPressed(evt);
 
-        pressed.add(evt.keyCode);
-        const isAllPressed = pressed.size >= Object.keys(KEY_SEND_CODES).length;
+      if (isAllPressed) {
+        const newComment = getEmptyComment();
+        const container = this.getElement().querySelector(`.film-details__new-comment`);
+        const newText = container.querySelector(`.film-details__comment-input`).value;
+        const newEmotion = this._currentEmotion;
 
-        if (isAllPressed) {
-          const newComment = getEmptyComment();
-          const container = this.getElement().querySelector(`.film-details__new-comment`);
-          const newText = container.querySelector(`.film-details__comment-input`).value;
-          const newEmotion = this._currentEmotion;
+        const isEmpty = !(newText && newEmotion);
 
-          const isEmpty = !(newText && newEmotion);
+        if (!isEmpty) {
+          newComment.text = he.encode(newText);
+          newComment.emotion = newEmotion;
 
-          if (!isEmpty) {
-            newComment.text = he.encode(newText);
-            newComment.emotion = newEmotion;
+          this.toggleCommentForm(true);
+          cb(this._film, newComment);
 
-            cb(this._film, newComment);
-
-            document.removeEventListener(`keydown`, onKeyDown);
-            document.removeEventListener(`keyup`, onKeyUp);
-          }
+          document.removeEventListener(`keydown`, onKeyDown);
         }
       }
     };
 
     document.addEventListener(`keydown`, onKeyDown);
-    document.addEventListener(`keyup`, onKeyUp);
   }
 
   show() {
     if (this._outerContainer) {
       this._outerContainer.append(this.getElement());
-      this._recoveryListeners();
+      this.rerender(this._film);
     }
   }
 
@@ -381,7 +373,6 @@ class Details extends AbstractSmartComponent {
 
     if (!boolean) {
       this.getElement().querySelector(`.film-details__new-comment`).classList.add(`shake`);
-
       this.setAddCommentHandler(this._addCommentsHandler);
     }
   }
@@ -389,10 +380,6 @@ class Details extends AbstractSmartComponent {
   shakeComment(commentIndex) {
     const currentComment = this.getElement().querySelectorAll(`.film-details__comment`)[commentIndex];
 
-    // if (currentComment.classList.contains(`shake`)) {
-    //   currentComment.classList.remove(`shake`);
-    //   console.log(`delete shake`);
-    // }
     const deleteButton = currentComment.querySelector(`.film-details__comment-delete`);
     deleteButton.disabled = false;
     deleteButton.textContent = BUTTON_STATES.DELETE.initial;
@@ -408,10 +395,10 @@ class Details extends AbstractSmartComponent {
     this._comments = comments;
   }
 
-  rerender(outerRecoveryListeners) {
+  rerender(updatedFilm) {
+    this._film = updatedFilm;
     super.rerender();
     this._recoveryListeners();
-    outerRecoveryListeners(this._film);
   }
 }
 
