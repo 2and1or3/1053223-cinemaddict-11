@@ -63,7 +63,7 @@ const pageController = new PageController(main, apiWithProvider, filmsModel, com
 apiWithProvider.getFilms()
 .then((films) => {
   quantityOfFilms = films.length;
-  filmsModel.setFilms(films);
+  filmsModel.set(films);
 })
 .then(() => {
   filtersController.render();
@@ -79,7 +79,7 @@ apiWithProvider.getFilms()
   render(footer, new FooterStatisticComponent(quantityOfFilms));
 })
 .catch((err) => {
-  filmsModel.setFilms([]);
+  filmsModel.set([]);
   throw new Error(err);
 });
 

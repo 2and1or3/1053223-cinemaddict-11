@@ -279,7 +279,7 @@ class Statistic extends AbstractSmartComponent {
   }
 
   render() {
-    const films = this._filmsModel.getAllFilms();
+    const films = this._filmsModel.getAll();
     const filteredFilms = films.filter((film) => this._isInPeriod(new Date(film.watchDate)));
 
     this._statistic[StatisticFields.ALL_WATCHED] = this._getWatched(filteredFilms);

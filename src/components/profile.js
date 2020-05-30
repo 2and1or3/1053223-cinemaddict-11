@@ -3,7 +3,7 @@ import AbstractSmartComponent from './abstract-smart-component.js';
 import {getUserStatus, render} from '../utils.js';
 import {FilterTypes} from '../const.js';
 
-const createProfileTemplate = function (profileHistory) {
+const createProfileTemplate = (profileHistory) => {
   const {count} = profileHistory;
   const userStatus = getUserStatus(count);
 
@@ -32,7 +32,7 @@ class Profile extends AbstractSmartComponent {
   }
 
   render() {
-    this._user.count = this._filmsModel.getFilms(FilterTypes.HISTORY).length;
+    this._user.count = this._filmsModel.get(FilterTypes.HISTORY).length;
 
     if (!this._element) {
       render(this._container, this);

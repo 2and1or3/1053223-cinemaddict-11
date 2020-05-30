@@ -105,7 +105,7 @@ class PageController {
   _loadButtonHandler(evt) {
     evt.preventDefault();
     const addCardStep = () => this._visibleCards + CARDS_STEP;
-    const films = this._filmsModel.getFilms();
+    const films = this._filmsModel.get();
 
     const isfilmsEnd = addCardStep() >= films.length;
 
@@ -125,7 +125,7 @@ class PageController {
   }
 
   _getSortedFilms(sortType) {
-    const sorted = this._filmsModel.getFilms().slice(0);
+    const sorted = this._filmsModel.get().slice(0);
     sorted.sort(SORT_FUNCTIONS[sortType]);
 
     return sorted;
@@ -166,7 +166,7 @@ class PageController {
 
     this._api.updateFilm(newFilm)
     .then((film) => {
-      this._filmsModel.updateFilm(film);
+      this._filmsModel.update(film);
 
       targetControllers.forEach((controller) => {
         controller.updateRender(film);
@@ -190,7 +190,7 @@ class PageController {
 
     this._api.deleteComment(commentId)
       .then(() => {
-        this._commentsModel.deleteComment(film.id, commentIndex);
+        this._commentsModel.delete(film.id, commentIndex);
 
         film.comments.splice(commentIndex, 1);
 
@@ -217,8 +217,8 @@ class PageController {
     this._api.addComment(film.id, newComment)
       .then((localData) => {
 
-        this._filmsModel.updateFilm(localData.movie);
-        this._commentsModel.setComments(localData.comments, film.id);
+        this._filmsModel.update(localData.movie);
+        this._commentsModel.set(localData.comments, film.id);
 
         targetControllers.forEach((controller) => {
           controller.updateRender(localData.movie);
@@ -244,7 +244,7 @@ class PageController {
   }
 
   _renderExtra() {
-    const films = this._filmsModel.getAllFilms().slice();
+    const films = this._filmsModel.getAll().slice();
 
     let topRateFilms = films.slice();
     let topCommentFilms = films.slice();
@@ -298,7 +298,7 @@ class PageController {
   }
 
   _renderLoadButton() {
-    const currentFilms = this._filmsModel.getFilms();
+    const currentFilms = this._filmsModel.get();
     const isMoreThanStep = currentFilms.length > CARDS_STEP;
 
     if (isMoreThanStep) {
@@ -308,7 +308,7 @@ class PageController {
   }
 
   render() {
-    const films = this._filmsModel.getFilms();
+    const films = this._filmsModel.get();
     const isEmptyData = !films.length;
 
     if (isEmptyData) {

@@ -18,7 +18,7 @@ const createFilterTemplate = (key, filter, isChecked) => {
   );
 };
 
-const createMenuTemplate = function (filters, currentFilter) {
+const createMenuTemplate = (filters, currentFilter) => {
   const filtersKeys = Object.keys(filters);
 
   const filterMarkup =

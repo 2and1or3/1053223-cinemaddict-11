@@ -1,6 +1,6 @@
 import AbstractComponent from './abstract-component.js';
 
-const createFooterStatisticTemplate = function (quantity) {
+const createFooterStatisticTemplate = (quantity) => {
   return (
     `<section class="footer__statistics">
         <p>${quantity} movies inside</p>

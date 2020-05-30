@@ -9,7 +9,7 @@ const SortTypes = {
 
 const ACTIVE_SORT_CLASS = `sort__button--active`;
 
-const createSortTemplate = function () {
+const createSortTemplate = () => {
   return (
     `<ul class="sort">
       <li><a href="#" class="sort__button ${ACTIVE_SORT_CLASS}" data-sort-type="${SortTypes.DEFAULT}">Sort by default</a></li>

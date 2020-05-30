@@ -27,19 +27,19 @@ class Films {
     handlers.forEach((handler) => handler());
   }
 
-  getFilms(currentFilter = this._currentFilter) {
+  get(currentFilter = this._currentFilter) {
     return getFilmsByFilter(this._films, currentFilter);
   }
 
-  getAllFilms() {
+  getAll() {
     return this._films;
   }
 
-  setFilms(films) {
+  set(films) {
     this._films = films;
   }
 
-  updateFilm(newFilm) {
+  update(newFilm) {
     this._films[newFilm.id] = newFilm;
 
     this._callHandlers(this._dataChangeHandlers);

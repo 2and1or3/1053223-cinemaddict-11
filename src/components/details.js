@@ -60,7 +60,7 @@ const getCommentTemplate = (comment) => {
 
 const createGenreTemplate = (genre) => `<span class="film-details__genre">${genre}</span>`;
 
-const createDetailsPopuptemplate = function (film, comments) {
+const createDetailsPopuptemplate = (film, comments) => {
 
   const {
     poster,

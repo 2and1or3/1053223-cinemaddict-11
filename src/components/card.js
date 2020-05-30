@@ -4,7 +4,7 @@ import {addListeners, yearCardFormat, durationFormat} from '../utils.js';
 const DESCRIPTION_LENGTH = 139;
 const DESCRIPTION_END = `…`;
 const CONTROL_ACTIVE_CLASS = `film-card__controls-item--active`;
-const createCardTemplate = function (film, commentsLenght) {
+const createCardTemplate = (film, commentsLenght) => {
 
   const {poster, title, rating, date, genres, description, duration, isFavorite, isWatchList, isWatched} = film;
 

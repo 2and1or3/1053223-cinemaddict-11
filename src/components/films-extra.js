@@ -1,6 +1,6 @@
 import AbstractComponent from './abstract-component.js';
 
-const createFilmsListExtraTemplate = function (title) {
+const createFilmsListExtraTemplate = (title) => {
   return (
     `<section class="films-list--extra">
       <h2 class="films-list__title">${title}</h2>

@@ -42,7 +42,7 @@ class CardController {
     this._api.getCommentsByFilmId(this._film.id)
     .then((comments) => {
 
-      this._commentsModel.setComments(comments, this._film.id);
+      this._commentsModel.set(comments, this._film.id);
 
       this._initDetails(comments);
     })
@@ -115,7 +115,7 @@ class CardController {
       this._api.getCommentsByFilmId(this._film.id)
       .then((comments) => {
 
-        this._commentsModel.setComments(comments, this._film.id);
+        this._commentsModel.set(comments, this._film.id);
 
         this._detailsComponent.setComments(comments);
         this._detailsComponent.rerender(this._film);
