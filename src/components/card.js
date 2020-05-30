@@ -14,7 +14,7 @@ const createCardTemplate = function (film, commentsLenght) {
   const isBigDescription = description.length > DESCRIPTION_LENGTH;
   const descriptionCover = (desc) => desc.slice(0, DESCRIPTION_LENGTH) + DESCRIPTION_END;
 
-  let text = isBigDescription ? descriptionCover(description) : description;
+  const text = isBigDescription ? descriptionCover(description) : description;
 
   return (
     `<article class="film-card">

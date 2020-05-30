@@ -1,6 +1,6 @@
 import AbstractComponent from './abstract-component.js';
 
-import {SCREEN_IDS} from '../const.js';
+import {ScreenIds} from '../const.js';
 
 const ACTIVE_CLASS = `main-navigation__item--active`;
 const STATISTIC_CLASS = `main-navigation__additional`;
@@ -78,10 +78,10 @@ class Menu extends AbstractComponent {
           filterActive.classList.remove(ACTIVE_CLASS);
           statisticControl.classList.add(ACTIVE_CLASS);
 
-          cb(SCREEN_IDS.STATISTIC);
+          cb(ScreenIds.STATISTIC);
         } else {
           statisticControl.classList.remove(ACTIVE_CLASS);
-          cb(SCREEN_IDS.CARDS);
+          cb(ScreenIds.CARDS);
         }
       }
     });

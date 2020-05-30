@@ -9,21 +9,21 @@ import FilmsExtraComponent from '../components/films-extra.js';
 import CardController from './card-controller.js';
 
 import {render, removeComponent, replace} from '../utils.js';
-import {SORT_TYPES} from '../components/sort.js';
+import {SortTypes} from '../components/sort.js';
 
 const CARDS_STEP = 5;
-const EXTRA_TYPES = {
+const ExtraTypes = {
   TOP: `Top rated`,
   MOST: `Most commented`,
 };
 
 const SORT_FUNCTIONS = {
-  [SORT_TYPES.DATE]: (leftFilm, rightFilm) => new Date(rightFilm.date) - new Date(leftFilm.date),
-  [SORT_TYPES.RATING]: (leftFilm, rightFilm) => rightFilm.rating - leftFilm.rating,
-  [SORT_TYPES.COMMENT]: (leftFilm, rightFilm) => rightFilm.comments.length - leftFilm.comments.length,
+  [SortTypes.DATE]: (leftFilm, rightFilm) => new Date(rightFilm.date) - new Date(leftFilm.date),
+  [SortTypes.RATING]: (leftFilm, rightFilm) => rightFilm.rating - leftFilm.rating,
+  [SortTypes.COMMENT]: (leftFilm, rightFilm) => rightFilm.comments.length - leftFilm.comments.length,
 };
 
-const COMMENT_FORM_ACTIVE = {
+const CommentFormActive = {
   ON: false,
   OFF: true,
 };
@@ -167,7 +167,7 @@ class PageController {
     this._api.updateFilm(newFilm)
     .then((film) => {
       this._filmsModel.updateFilm(film);
-      // debugger;
+
       targetControllers.forEach((controller) => {
         controller.updateRender(film);
       });
@@ -215,19 +215,19 @@ class PageController {
         .filter((controller) => controller.getId() === film.id);
 
     this._api.addComment(film.id, newComment)
-      .then((localObj) => {
+      .then((localData) => {
 
-        this._filmsModel.updateFilm(localObj.movie);
-        this._commentsModel.setComments(localObj.comments, film.id);
+        this._filmsModel.updateFilm(localData.movie);
+        this._commentsModel.setComments(localData.comments, film.id);
 
         targetControllers.forEach((controller) => {
-          controller.updateRender(localObj.movie);
+          controller.updateRender(localData.movie);
         });
         this._renderExtra();
       })
       .catch(() => {
         targetControllers.forEach((controller) => {
-          controller.toggleCommentForm(COMMENT_FORM_ACTIVE.ON);
+          controller.toggleCommentForm(CommentFormActive.ON);
         });
       });
   }
@@ -249,8 +249,8 @@ class PageController {
     let topRateFilms = films.slice();
     let topCommentFilms = films.slice();
 
-    topRateFilms.sort(SORT_FUNCTIONS[SORT_TYPES.RATING]);
-    topCommentFilms.sort(SORT_FUNCTIONS[SORT_TYPES.COMMENT]);
+    topRateFilms.sort(SORT_FUNCTIONS[SortTypes.RATING]);
+    topCommentFilms.sort(SORT_FUNCTIONS[SortTypes.COMMENT]);
 
     topRateFilms = topRateFilms.slice(0, QUANTITY_EXTRA_CARDS);
     topCommentFilms = topCommentFilms.slice(0, QUANTITY_EXTRA_CARDS);
@@ -260,8 +260,8 @@ class PageController {
     const maxCommentsLength = topCommentFilms[0].comments.length;
 
     if (!(this._filmsExtraComponentRate || this._filmsExtraComponentComment)) {
-      this._filmsExtraComponentRate = new FilmsExtraComponent(EXTRA_TYPES.TOP);
-      this._filmsExtraComponentComment = new FilmsExtraComponent(EXTRA_TYPES.MOST);
+      this._filmsExtraComponentRate = new FilmsExtraComponent(ExtraTypes.TOP);
+      this._filmsExtraComponentComment = new FilmsExtraComponent(ExtraTypes.MOST);
 
       if (maxRating) {
         render(this._contentContainerComponent.getElement(), this._filmsExtraComponentRate);
@@ -336,7 +336,7 @@ class PageController {
   }
 
   resetCurrentSort() {
-    this._repeatRender(SORT_TYPES.DEFAULT);
+    this._repeatRender(SortTypes.DEFAULT);
     this._sortComponent.resetCurrentSort();
   }
 }

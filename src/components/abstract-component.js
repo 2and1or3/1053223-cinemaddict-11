@@ -1,19 +1,19 @@
 import {createElement} from '../utils.js';
-import {ERRORS} from '../const.js';
+import {Errors} from '../const.js';
 
 const HIDE_CLASS = `visually-hidden`;
 
 class AbstractComponent {
   constructor() {
     if (new.target === AbstractComponent) {
-      throw new Error(ERRORS.INSTANCE);
+      throw new Error(Errors.INSTANCE);
     }
 
     this._element = null;
   }
 
   getTemplate() {
-    throw new Error(ERRORS.IMPLEMENT_GET_TEMPLATE);
+    throw new Error(Errors.IMPLEMENT_GET_TEMPLATE);
   }
 
   getElement() {

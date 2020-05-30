@@ -1,41 +1,15 @@
-import {MONTH_NAMES, DATE_YEAR, RENDER_METHODS, USER_STATUSES} from './const.js';
+import {RenderMethods, USER_STATUSES} from './const.js';
 
 import moment from "moment";
 
-const DAYS = 31;
-const HOURS = 24;
-const MINUTES = 60;
 const PRESS_KEY = {
   ESC: 27,
 };
 
 const isEscPress = (evt) => evt.keyCode === PRESS_KEY.ESC;
 
-const getRandomArray = (arr) => {
-  const count = Math.round(Math.random() * (arr.length - 1)) + 1;
-  const newArr = [];
-
-  for (let i = 0; i < count; i++) {
-    newArr.push(arr[i]);
-  }
-
-  return newArr;
-};
-
 const getRandomInteger = (min, max) => {
   return Math.round(min + (Math.random() * (max - min)));
-};
-
-const getRandomDate = () => {
-  const date = new Date(
-      getRandomInteger(DATE_YEAR.min, DATE_YEAR.max),
-      getRandomInteger(0, MONTH_NAMES.length),
-      getRandomInteger(0, DAYS),
-      getRandomInteger(0, HOURS),
-      getRandomInteger(0, MINUTES)
-  );
-
-  return date;
 };
 
 const yearCardFormat = (date) => {
@@ -70,18 +44,18 @@ const createElement = (template) => {
   return container.firstChild;
 };
 
-const render = (target, component, method = RENDER_METHODS.APPEND) => {
+const render = (target, component, method = RenderMethods.APPEND) => {
 
   switch (method) {
-    case RENDER_METHODS.PREPEND:
+    case RenderMethods.PREPEND:
       target.prepend(component.getElement());
       break;
 
-    case RENDER_METHODS.APPEND:
+    case RenderMethods.APPEND:
       target.append(component.getElement());
       break;
 
-    case RENDER_METHODS.AFTER:
+    case RenderMethods.AFTER:
       target.after(component.getElement());
       break;
   }
@@ -117,12 +91,10 @@ const replace = (newComponent, oldComponent) => {
 };
 
 export {
-  getRandomArray,
   getRandomInteger,
   dateDetailsFormat,
   durationFormat,
   dateCommentFormat,
-  getRandomDate,
   createElement,
   render,
   removeComponent,

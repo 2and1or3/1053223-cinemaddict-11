@@ -6,13 +6,13 @@ import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import moment from 'moment';
 
-const STATISTIC_FIELDS = {
+const StatisticFields = {
   ALL_WATCHED: `allWatched`,
   ALL_DURATION: `allDuration`,
   FAVORITE_GENTER: `favoriteGenre`,
 };
 
-const GENRES_SET = {
+const GenresSet = {
   SCIFI: `Sci-Fi`,
   ANIMATION: `Animation`,
   COMEDY: `Comedy`,
@@ -176,13 +176,13 @@ class Statistic extends AbstractSmartComponent {
     this._currentPeriod = PERIOD_IDS.ALL_TIME;
 
     this._statistic = {
-      [STATISTIC_FIELDS.ALL_WATCHED]: 0,
-      [STATISTIC_FIELDS.ALL_DURATION]: 0,
-      [STATISTIC_FIELDS.FAVORITE_GENTER]: ``,
+      [StatisticFields.ALL_WATCHED]: 0,
+      [StatisticFields.ALL_DURATION]: 0,
+      [StatisticFields.FAVORITE_GENTER]: ``,
     };
 
     this._genresCounts = [];
-    const genresKeys = Object.values(GENRES_SET);
+    const genresKeys = Object.values(GenresSet);
     genresKeys.forEach((key) => {
       const count = {
         title: key,
@@ -282,10 +282,10 @@ class Statistic extends AbstractSmartComponent {
     const films = this._filmsModel.getAllFilms();
     const filteredFilms = films.filter((film) => this._isInPeriod(new Date(film.watchDate)));
 
-    this._statistic[STATISTIC_FIELDS.ALL_WATCHED] = this._getWatched(filteredFilms);
-    this._statistic[STATISTIC_FIELDS.ALL_DURATION] = this._getAllDuration(filteredFilms);
-    this._calculateGenres(this._statistic[STATISTIC_FIELDS.ALL_WATCHED]);
-    this._statistic[STATISTIC_FIELDS.FAVORITE_GENTER] = this._genresCounts[0].count ? this._genresCounts[0].title : ``;
+    this._statistic[StatisticFields.ALL_WATCHED] = this._getWatched(filteredFilms);
+    this._statistic[StatisticFields.ALL_DURATION] = this._getAllDuration(filteredFilms);
+    this._calculateGenres(this._statistic[StatisticFields.ALL_WATCHED]);
+    this._statistic[StatisticFields.FAVORITE_GENTER] = this._genresCounts[0].count ? this._genresCounts[0].title : ``;
 
     if (!this._element) {
       render(this._container, this);

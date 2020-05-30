@@ -1,10 +1,10 @@
-import {FILTER_TYPES} from '../const.js';
+import {FilterTypes} from '../const.js';
 
 const FILTER_FUNCTIONS = {
-  [FILTER_TYPES.ALL]: () => true,
-  [FILTER_TYPES.WATCHLIST]: (film) => film.isWatchList,
-  [FILTER_TYPES.HISTORY]: (film) => film.isWatched,
-  [FILTER_TYPES.FAVORITE]: (film) => film.isFavorite,
+  [FilterTypes.ALL]: () => true,
+  [FilterTypes.WATCHLIST]: (film) => film.isWatchList,
+  [FilterTypes.HISTORY]: (film) => film.isWatched,
+  [FilterTypes.FAVORITE]: (film) => film.isFavorite,
 };
 
 const getFilmsByFilter = (films, filterType) => {
@@ -17,7 +17,7 @@ class Films {
   constructor() {
     this._films = null;
 
-    this._currentFilter = FILTER_TYPES.ALL;
+    this._currentFilter = FilterTypes.ALL;
 
     this._dataChangeHandlers = [];
     this._filterChangeHandlers = [];

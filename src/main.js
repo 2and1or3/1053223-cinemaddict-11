@@ -14,7 +14,7 @@ import Store from './api/store.js';
 
 import {render} from './utils.js';
 
-import {SCREEN_IDS} from './const.js';
+import {ScreenIds} from './const.js';
 
 const TOKEN = `Basic ok20kk292s2k2v99w09as255k29s`;
 
@@ -26,13 +26,13 @@ const PAGE_TITLE_OFFLINE = `[offline]`;
 
 const onScreenChange = (screenId) => {
   switch (screenId) {
-    case SCREEN_IDS.STATISTIC:
+    case ScreenIds.STATISTIC:
       pageController.hide();
       pageController.resetCurrentSort();
       statisticComponent.show();
       break;
 
-    case SCREEN_IDS.CARDS:
+    case ScreenIds.CARDS:
       statisticComponent.hide();
       pageController.resetCurrentSort();
       pageController.show();

@@ -3,7 +3,7 @@ import DetailsComponent from '../components/details.js';
 
 import {render, isEscPress, removeComponent} from '../utils.js';
 
-const FILM_PROPERTIES = {
+const FilmProperties = {
   IS_WATCHLIST: `isWatchList`,
   IS_FAVORITE: `isFavorite`,
   IS_WATCHED: `isWatched`,
@@ -72,7 +72,7 @@ class CardController {
   _changeFilmState(property) {
     const changedFilm = {[property]: !this._film[property]};
 
-    if (property === FILM_PROPERTIES.IS_WATCHED) {
+    if (property === FilmProperties.IS_WATCHED) {
       changedFilm.watchDate = this._film.watchDate ? null : new Date();
     }
 
@@ -82,15 +82,15 @@ class CardController {
 
   _recoveryListeners() {
     this._cardComponent.setOpenClickHandlers(this._openPopup);
-    this._cardComponent.setWatchListClickHandler(() => this._changeFilmState(FILM_PROPERTIES.IS_WATCHLIST));
-    this._cardComponent.setHistoryClickHandler(() => this._changeFilmState(FILM_PROPERTIES.IS_WATCHED));
-    this._cardComponent.setFavoriteClickHandler(() => this._changeFilmState(FILM_PROPERTIES.IS_FAVORITE));
+    this._cardComponent.setWatchListClickHandler(() => this._changeFilmState(FilmProperties.IS_WATCHLIST));
+    this._cardComponent.setHistoryClickHandler(() => this._changeFilmState(FilmProperties.IS_WATCHED));
+    this._cardComponent.setFavoriteClickHandler(() => this._changeFilmState(FilmProperties.IS_FAVORITE));
   }
 
   _recoveryDetailsListeners() {
-    this._detailsComponent.setWatchListClickHandler(() => this._changeFilmState(FILM_PROPERTIES.IS_WATCHLIST));
-    this._detailsComponent.setHistoryClickHandler(() => this._changeFilmState(FILM_PROPERTIES.IS_WATCHED));
-    this._detailsComponent.setFavoriteClickHandler(() => this._changeFilmState(FILM_PROPERTIES.IS_FAVORITE));
+    this._detailsComponent.setWatchListClickHandler(() => this._changeFilmState(FilmProperties.IS_WATCHLIST));
+    this._detailsComponent.setHistoryClickHandler(() => this._changeFilmState(FilmProperties.IS_WATCHED));
+    this._detailsComponent.setFavoriteClickHandler(() => this._changeFilmState(FilmProperties.IS_FAVORITE));
 
     this._detailsComponent.setDeleteCommentsHandler(this._onCommentDelete);
     this._detailsComponent.setAddCommentHandler(this._onCommentAdd);

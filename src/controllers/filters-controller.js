@@ -1,21 +1,21 @@
 import MenuComponent from '../components/menu.js';
 import {render, removeComponent} from '../utils.js';
-import {FILTER_TYPES, RENDER_METHODS} from '../const.js';
+import {FilterTypes, RenderMethods} from '../const.js';
 
 const filters = {
-  [FILTER_TYPES.ALL]: {
+  [FilterTypes.ALL]: {
     title: `All movies`,
     count: null,
   },
-  [FILTER_TYPES.WATCHLIST]: {
+  [FilterTypes.WATCHLIST]: {
     title: `Watchlist`,
     count: null,
   },
-  [FILTER_TYPES.HISTORY]: {
+  [FilterTypes.HISTORY]: {
     title: `History`,
     count: null,
   },
-  [FILTER_TYPES.FAVORITE]: {
+  [FilterTypes.FAVORITE]: {
     title: `Favorite`,
     count: null,
   },
@@ -28,7 +28,7 @@ class FilterController {
     this._filters = filters;
 
     this._menuComponent = null;
-    this._currentFilter = FILTER_TYPES.ALL;
+    this._currentFilter = FilterTypes.ALL;
 
     this._onDataChange = this._onDataChange.bind(this);
     this._onFilterChange = this._onFilterChange.bind(this);
@@ -39,9 +39,9 @@ class FilterController {
   }
 
   _updateFilters() {
-    this._filters[FILTER_TYPES.WATCHLIST].count = this._filmsModel.getFilms(FILTER_TYPES.WATCHLIST).length;
-    this._filters[FILTER_TYPES.FAVORITE].count = this._filmsModel.getFilms(FILTER_TYPES.FAVORITE).length;
-    this._filters[FILTER_TYPES.HISTORY].count = this._filmsModel.getFilms(FILTER_TYPES.HISTORY).length;
+    this._filters[FilterTypes.WATCHLIST].count = this._filmsModel.getFilms(FilterTypes.WATCHLIST).length;
+    this._filters[FilterTypes.FAVORITE].count = this._filmsModel.getFilms(FilterTypes.FAVORITE).length;
+    this._filters[FilterTypes.HISTORY].count = this._filmsModel.getFilms(FilterTypes.HISTORY).length;
   }
 
   _onFilterChange(newFilter) {
@@ -63,13 +63,9 @@ class FilterController {
     this._updateFilters();
 
     this._menuComponent = new MenuComponent(this._filters, this._currentFilter);
-    render(this._container, this._menuComponent, RENDER_METHODS.PREPEND);
+    render(this._container, this._menuComponent, RenderMethods.PREPEND);
 
     this._menuComponent.setFilterHandler(this._onFilterChange);
-  }
-
-  getFilters() {
-    return this._filters;
   }
 
   setScreenChangeHandler(cb) {

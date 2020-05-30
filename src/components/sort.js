@@ -1,6 +1,6 @@
 import AbstractComponent from './abstract-component.js';
 
-const SORT_TYPES = {
+const SortTypes = {
   DEFAULT: `default`,
   DATE: `date`,
   RATING: `rating`,
@@ -12,9 +12,9 @@ const ACTIVE_SORT_CLASS = `sort__button--active`;
 const createSortTemplate = function () {
   return (
     `<ul class="sort">
-      <li><a href="#" class="sort__button ${ACTIVE_SORT_CLASS}" data-sort-type="${SORT_TYPES.DEFAULT}">Sort by default</a></li>
-      <li><a href="#" class="sort__button" data-sort-type="${SORT_TYPES.DATE}">Sort by date</a></li>
-      <li><a href="#" class="sort__button" data-sort-type="${SORT_TYPES.RATING}">Sort by rating</a></li>
+      <li><a href="#" class="sort__button ${ACTIVE_SORT_CLASS}" data-sort-type="${SortTypes.DEFAULT}">Sort by default</a></li>
+      <li><a href="#" class="sort__button" data-sort-type="${SortTypes.DATE}">Sort by date</a></li>
+      <li><a href="#" class="sort__button" data-sort-type="${SortTypes.RATING}">Sort by rating</a></li>
     </ul>`
   );
 };
@@ -22,7 +22,7 @@ const createSortTemplate = function () {
 class Sort extends AbstractComponent {
   constructor() {
     super();
-    this._currentSort = SORT_TYPES.DEFAULT;
+    this._currentSort = SortTypes.DEFAULT;
   }
 
   _toggleActiveClass(sortType) {
@@ -56,10 +56,10 @@ class Sort extends AbstractComponent {
   }
 
   resetCurrentSort() {
-    this._currentSort = SORT_TYPES.DEFAULT;
+    this._currentSort = SortTypes.DEFAULT;
     this._toggleActiveClass(this._currentSort);
   }
 }
 
 export default Sort;
-export {SORT_TYPES};
+export {SortTypes};

@@ -5,21 +5,21 @@ const MOVIES_POSTFIX = `movies`;
 const COMMENTS_POSTFIX = `comments`;
 const SYNC_URL = `sync`;
 
-const METHODS = {
+const Methods = {
   POST: `POST`,
   PUT: `PUT`,
   GET: `GET`,
   DELETE: `DELETE`,
 };
 
-const REQUEST_CODES = {
+const RequestCodes = {
   OK: 200,
   REDIRECT: 300,
 };
 
 const checkStatus = (response) => {
 
-  if (response.status >= REQUEST_CODES.OK && response.status < REQUEST_CODES.REDIRECT) {
+  if (response.status >= RequestCodes.OK && response.status < RequestCodes.REDIRECT) {
     return response;
   } else {
     throw new Error(response.status);
@@ -31,7 +31,7 @@ class API {
     this._token = token;
   }
 
-  _getRequest(headers, url = ``, method = METHODS.GET, body = null) {
+  _getRequest(headers, url = ``, method = Methods.GET, body = null) {
     const resultUrl = url ? MAIN_URL + `/` + url : MAIN_URL;
     headers.append(`Authorization`, this._token);
 
@@ -65,7 +65,7 @@ class API {
     newFilm = FilmAdapter.toRAWFilm(newFilm);
     const body = JSON.stringify(newFilm);
 
-    return this._getRequest(headers, url, METHODS.PUT, body)
+    return this._getRequest(headers, url, Methods.PUT, body)
             .then((response) => response.json())
             .then((film) => FilmAdapter.parseFilm(film))
             .catch((err) => {
@@ -95,15 +95,15 @@ class API {
 
     const url = COMMENTS_POSTFIX + `/` + filmId;
 
-    return this._getRequest(headers, url, METHODS.POST, body)
+    return this._getRequest(headers, url, Methods.POST, body)
             .then((response) => response.json())
             .then((filmAndComments) => {
-              const localObj = {
+              const localFilm = {
                 movie: FilmAdapter.parseFilm(filmAndComments.movie),
                 comments: FilmAdapter.parseComments(filmAndComments.comments),
               };
 
-              return localObj;
+              return localFilm;
             })
             .catch((err) => {
               throw new Error(err);
@@ -115,7 +115,7 @@ class API {
 
     const url = COMMENTS_POSTFIX + `/` + commentId;
 
-    return this._getRequest(headers, url, METHODS.DELETE)
+    return this._getRequest(headers, url, Methods.DELETE)
             .then((response) => response.ok)
             .catch((err) => {
               throw new Error(err);
@@ -131,7 +131,7 @@ class API {
     films = films.map((film) => FilmAdapter.toRAWFilm(film));
     const body = JSON.stringify(films);
 
-    return this._getRequest(headers, url, METHODS.POST, body)
+    return this._getRequest(headers, url, Methods.POST, body)
             .then((response) => response.json())
             .catch((err) => {
               throw new Error(err);

@@ -2,26 +2,28 @@ import AbstractSmartComponent from './abstract-smart-component.js';
 import {dateDetailsFormat, durationFormat, dateCommentFormat} from '../utils.js';
 import he from "he";
 
-const EMOJI_SOURCE = {
+const EmojiSource = {
   PREFIX: `images/emoji/`,
   POSTFIX: `.png`,
   WIDTH: 55,
   HEIGHT: 55,
 };
 
-const KEY_SEND_CODES = {
+const KeySendCodes = {
   CTRL: 17,
   ENTER: 13,
 };
 
-const BUTTON_STATES = {
+const ButtonStates = {
   DELETE: {
     initial: `Delete`,
     inProcess: `Deleting...`,
   },
 };
 
-const isSendKeysPressed = (evt) => (evt.ctrlKey || evt.metakey) && (evt.keyCode === KEY_SEND_CODES.ENTER);
+const REMOVE_DURATION = 600;
+
+const isSendKeysPressed = (evt) => (evt.ctrlKey || evt.metakey) && (evt.keyCode === KeySendCodes.ENTER);
 
 const getEmptyComment = () => {
   const now = new Date();
@@ -233,12 +235,12 @@ class Details extends AbstractSmartComponent {
     container.addEventListener(`change`, (evt) => {
       if (!this._emojiElement) {
         this._emojiElement = document.createElement(`img`);
-        this._emojiElement.width = EMOJI_SOURCE.WIDTH;
-        this._emojiElement.height = EMOJI_SOURCE.HEIGHT;
+        this._emojiElement.width = EmojiSource.WIDTH;
+        this._emojiElement.height = EmojiSource.HEIGHT;
         emojiHolder.append(this._emojiElement);
       }
 
-      this._emojiElement.setAttribute(`src`, `${EMOJI_SOURCE.PREFIX}${evt.target.value}${EMOJI_SOURCE.POSTFIX}`);
+      this._emojiElement.setAttribute(`src`, `${EmojiSource.PREFIX}${evt.target.value}${EmojiSource.POSTFIX}`);
       this._emojiElement.setAttribute(`alt`, `emoji-${evt.target.value}`);
       this._currentEmotion = evt.target.value;
     });
@@ -306,7 +308,7 @@ class Details extends AbstractSmartComponent {
 
            comment.addEventListener(`click`, (evt) => {
              if (evt.target === deleteButton) {
-               deleteButton.textContent = BUTTON_STATES.DELETE.inProcess;
+               deleteButton.textContent = ButtonStates.DELETE.inProcess;
                deleteButton.disabled = true;
 
                arr.forEach((targetComment) => {
@@ -382,13 +384,13 @@ class Details extends AbstractSmartComponent {
 
     const deleteButton = currentComment.querySelector(`.film-details__comment-delete`);
     deleteButton.disabled = false;
-    deleteButton.textContent = BUTTON_STATES.DELETE.initial;
+    deleteButton.textContent = ButtonStates.DELETE.initial;
 
     currentComment.classList.add(`shake`);
 
     setTimeout(() => {
       currentComment.classList.remove(`shake`);
-    }, 600);
+    }, REMOVE_DURATION);
   }
 
   setComments(comments) {
