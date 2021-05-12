@@ -24,7 +24,7 @@
     "node": "10"
   },
   "dependencies": {
-    "chart.js": "2.9.3",
+    "chart.js": "2.9.4",
     "gh-pages": "^2.2.0",
     "he": "1.2.0",
     "moment": "2.24.0"
